@@ -491,7 +491,7 @@ window.firestoreSalvar = async function(chave, dados){
       if(!snap.exists()) return null;
       const data = snap.data();
       if(!data.chunked){
-        return { valor: JSON.parse(data.valor), atualizadoEm: data.atualizadoEm || null };
+        return JSON.parse(data.valor);
       }
       let jsonCompleto = '';
       for(let i=0; i<data.totalPartes; i++){
@@ -500,7 +500,7 @@ window.firestoreSalvar = async function(chave, dados){
           jsonCompleto += parteSnap.data().valor;
         }
       }
-      return { valor: JSON.parse(jsonCompleto), atualizadoEm: data.atualizadoEm || null };
+      return JSON.parse(jsonCompleto);
     } catch(e){
       console.warn("Erro ao carregar do Firestore:", e.message);
       return null;
@@ -611,15 +611,19 @@ window.firestoreSalvar = async function(chave, dados){
 
 // ===== DB =====
 const _dbCache = {};
+const CHAVES_SOMENTE_NUVEM = ['compras']; // nunca gravadas no localStorage (evita estourar cota e corromper outras chaves)
 const DB = {
  get(k){
    if(Object.prototype.hasOwnProperty.call(_dbCache,k)) return _dbCache[k];
+   if(CHAVES_SOMENTE_NUVEM.includes(k)){ _dbCache[k]=[]; return []; }
    let v; try{ v=JSON.parse(localStorage.getItem('gestao_'+k)||'[]'); }catch(e){ v=[]; }
    _dbCache[k]=v;
    return v;
  },
  set(k,v){
-   try{ localStorage.setItem('gestao_'+k, JSON.stringify(v)); _marcarAlteracaoLocal(k); }catch(e){ console.warn('localStorage cheio, mantendo apenas em memoria/nuvem:',k,e); _avisarStorageCheio(); }
+   if(!CHAVES_SOMENTE_NUVEM.includes(k)){
+     try{ localStorage.setItem('gestao_'+k, JSON.stringify(v)); }catch(e){ console.warn('localStorage cheio, mantendo apenas em memoria/nuvem:',k,e); }
+   }
    _dbCache[k]=v;
    syncParaNuvem(k, v);
  },
@@ -631,28 +635,12 @@ const DB = {
    return v;
  },
  setObj(k,v){
-   try{ localStorage.setItem('gestao_'+k, JSON.stringify(v)); _marcarAlteracaoLocal(k); }catch(e){ console.warn('localStorage cheio, mantendo apenas em memoria/nuvem:',k,e); _avisarStorageCheio(); }
+   try{ localStorage.setItem('gestao_'+k, JSON.stringify(v)); }catch(e){ console.warn('localStorage cheio, mantendo apenas em memoria/nuvem:',k,e); }
    _dbCache['obj:'+k]=v;
    syncParaNuvem(k, v);
  },
  _invalidar(k){ delete _dbCache[k]; delete _dbCache['obj:'+k]; }
 };
-
-// Marca em localStorage o instante exato de uma alteracao local, para nunca deixar
-// um dado novo (que ainda nao subiu pra nuvem) ser sobrescrito por um dado velho
-// vindo da nuvem numa proxima abertura da pagina.
-function _marcarAlteracaoLocal(k){
-  try{ localStorage.setItem('gestao_meta_'+k, JSON.stringify({t:new Date().toISOString()})); }catch(e){ _avisarStorageCheio(); }
-}
-
-// Antes disso, uma falha de localStorage (espaco do navegador cheio) ficava so no console
-// e o lancamento podia se perder sem ninguem perceber. Agora avisa bem visivel na tela.
-let _avisoStorageCheioMostrado = false;
-function _avisarStorageCheio(){
-  if(_avisoStorageCheioMostrado) return;
-  _avisoStorageCheioMostrado = true;
-  try{ toast('Atencao: o armazenamento do navegador esta cheio. O lancamento pode nao ter sido salvo direito. Avise a Cassiane / limpe o cache.', 'err'); }catch(e){}
-}
 
 // ===== FORMATACAO DE DATA PADRAO BRASIL (dd/mm/aaaa) =====
 function formatarDataBR(dataStr){
@@ -732,14 +720,8 @@ function enviarChaveParaNuvem(chave, dados){
   atualizarStatusSync('syncing');
   Promise.resolve(window.firestoreSalvar(chave, dados)).then(function(ok){
     atualizarStatusSync(ok ? 'ok' : 'error');
-    if(ok){ _pendenteSync[chave] = false; }
-    else { _avisarErroSyncNuvem(chave); }
-  }).catch(function(){ atualizarStatusSync('error'); _avisarErroSyncNuvem(chave); });
-}
-// Antes, um erro de envio pra nuvem so mudava um textinho pequeno no canto - facil de nao notar
-// e seguir usando o app achando que estava tudo sincronizado. Agora avisa com um toast tambem.
-function _avisarErroSyncNuvem(chave){
-  try{ toast('Nao consegui sincronizar "'+chave+'" com a nuvem agora. Verifique sua internet e nao feche a aba ate o indicador ficar verde (Sincronizado).', 'err'); }catch(e){}
+    if(ok) _pendenteSync[chave] = false;
+  }).catch(function(){ atualizarStatusSync('error'); });
 }
 // Se a pessoa trocar de aba, minimizar ou fechar rapido demais, dispara na hora o que ainda nao subiu —
 // em vez de esperar o debounce, evitando perder um lancamento por causa de um fechamento rapido.
@@ -798,35 +780,19 @@ async function carregarDaNuvem(){
   let algumDado = false;
   const resultados = await Promise.all(CHAVES_SYNC.map(function(chave){
     return window.firestoreCarregar(chave)
-      .then(function(r){ return {chave:chave, dados: r ? r.valor : null, atualizadoEm: r ? r.atualizadoEm : null}; })
-      .catch(function(e){ console.warn('Erro ao carregar', chave, e.message); return {chave:chave, dados:null, atualizadoEm:null}; });
+      .then(function(dados){ return {chave:chave, dados:dados}; })
+      .catch(function(e){ console.warn('Erro ao carregar', chave, e.message); return {chave:chave, dados:null}; });
   }));
   for(const r of resultados){
-    if(r.dados === null) continue;
-    if(_pendenteSync[r.chave]) continue; // nao sobrescreve uma edicao local que ainda esta subindo nesta mesma sessao
-
-    // Protecao contra corrida: se o dado local foi alterado DEPOIS do que a nuvem tem registrado
-    // (ex: fechou a aba antes do envio terminar), nao aceita o dado da nuvem - ele esta desatualizado.
-    // Em vez disso, reenvia o dado local para a nuvem.
-    let localMaisNovo = false;
-    try{
-      const metaRaw = localStorage.getItem('gestao_meta_'+r.chave);
-      if(metaRaw){
-        const meta = JSON.parse(metaRaw);
-        if(meta && meta.t && (!r.atualizadoEm || meta.t > r.atualizadoEm)) localMaisNovo = true;
+    if(r.dados !== null && !_pendenteSync[r.chave]){ // nao sobrescreve uma edicao local que ainda esta subindo
+      if(CHAVES_SOMENTE_NUVEM.includes(r.chave)){
+        _dbCache[r.chave] = r.dados;
+      } else {
+        try{ localStorage.setItem('gestao_'+r.chave, JSON.stringify(r.dados)); }catch(e){ console.warn('localStorage cheio ao carregar da nuvem:',r.chave,e); }
+        DB._invalidar(r.chave);
       }
-    }catch(e){}
-
-    if(localMaisNovo){
-      let localRaw = null;
-      try{ localRaw = JSON.parse(localStorage.getItem('gestao_'+r.chave)); }catch(e){}
-      if(localRaw !== null){ enviarChaveParaNuvem(r.chave, localRaw); }
-      continue;
+      algumDado = true;
     }
-
-    try{ localStorage.setItem('gestao_'+r.chave, JSON.stringify(r.dados)); }catch(e){ console.warn('localStorage cheio ao carregar da nuvem:',r.chave,e); }
-    DB._invalidar(r.chave);
-    algumDado = true;
   }
   atualizarStatusSync(algumDado ? 'ok' : 'idle');
   return algumDado;

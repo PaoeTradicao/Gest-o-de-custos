@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lanches · Pão & Tradição</title>
+<meta name="theme-color" content="#13215E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lanches">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192-maskable.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<script>
+  // Aplica o tema antes de desenhar a página, para não piscar branco no modo escuro.
+  (function(){
+    var t = null; try{ t = localStorage.getItem('lanches-tema'); }catch(e){}
+    var escuro = t ? t === 'escuro' : (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+    if(escuro) document.documentElement.classList.add('pre-escuro');
+  })();
+</script>
+<style>
+  :root{
+    --azul:#13215E; --azul-2:#1c2f7a; --azul-fixo:#13215E; --ouro:#EFAD4C; --ouro-claro:#FBF3E8;
+    --creme:#F5F0DC; --fundo:#FAFAF7; --texto:#101828; --texto-2:#5B7184; --texto-3:#8b95a8;
+    --superficie:#ffffff; --superficie-2:#F5F4F0; --linha:#F0EFEA; --campo:#fcfbf7;
+    --borda:#E4E7EC; --borda-forte:#d8d3c0;
+    --verde:#1D9E75; --vermelho:#C0392B;
+  }
+  html.pre-escuro, html.pre-escuro body{background:#12151C}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:'Inter',Arial,sans-serif;background:var(--fundo);color:var(--texto);min-height:100vh;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{margin:0;color:var(--azul);font-weight:700}
+  .titulo-serif{font-family:'Playfair Display',Georgia,serif}
+  .hidden{display:none!important}
+  .card{background:var(--superficie);border-radius:16px;padding:1.2rem;box-shadow:0 1px 3px rgba(19,33,94,.06);margin-bottom:1rem;border:1px solid var(--borda)}
+  label{display:block;font-size:.72rem;font-weight:700;color:var(--azul);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+  input,textarea,select{width:100%;padding:12px 13px;border:1px solid var(--borda-forte);border-radius:9px;font-size:16px;margin-bottom:1rem;font-family:inherit;color:var(--texto);background:var(--campo);transition:border-color .15s;-webkit-appearance:none;appearance:none}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--ouro);background:var(--superficie)}
+  input[type="date"]{min-height:46px}
+  input[type="checkbox"]{width:auto;margin:0;-webkit-appearance:checkbox;appearance:checkbox}
+  textarea{resize:vertical;min-height:110px}
+  .btn{padding:11px 17px;border:none;border-radius:10px;font-weight:700;font-size:.88rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;transition:background .15s;min-height:44px}
+  .btn svg{width:17px;height:17px}
+  .btn-azul{background:var(--azul);color:#fff}
+  .btn-azul:active{background:var(--azul-2)}
+  .btn-ouro{background:var(--ouro);color:var(--azul-fixo)}
+  .btn-outline{background:var(--superficie);border:1px solid var(--borda-forte);color:var(--azul)}
+  .btn-perigo{background:transparent;border:1px solid var(--vermelho);color:var(--vermelho)}
+  .btn-sm{padding:6px 12px;font-size:.78rem;min-height:34px}
+  .btn-full{width:100%}
+  .btn:disabled{opacity:.55;cursor:default}
+  .erro{color:var(--vermelho);font-size:.83rem;margin-bottom:.7rem;min-height:1rem;font-weight:500}
+  .dica-campo{font-size:.75rem;color:var(--texto-2);line-height:1.5;margin:-.5rem 0 .8rem}
+  .vazio{color:var(--texto-3);font-size:.86rem;padding:1.4rem 0;text-align:center}
+  .rodape{text-align:center;font-size:.72rem;color:var(--texto-3);margin-top:1.6rem}
+
+  /* Telas cheias: carregando, login, primeiro acesso, sem acesso */
+  .tela-cheia{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;padding-top:max(1.5rem, env(safe-area-inset-top));padding-bottom:max(1.5rem, env(safe-area-inset-bottom))}
+  .caixa-login{width:100%;max-width:380px;text-align:center}
+  .caixa-login .logo{width:96px;height:96px;border-radius:24px;display:block;margin:0 auto 1rem;box-shadow:0 4px 16px rgba(19,33,94,.14)}
+  .caixa-login h1{font-family:'Playfair Display',Georgia,serif;font-size:2rem;margin-bottom:.2rem}
+  .caixa-login .sub{color:var(--texto-2);font-size:.9rem;margin-bottom:1.6rem}
+  .caixa-login .card{text-align:left}
+  .btn-google{width:100%;background:#fff;color:#1f1f1f;border:1px solid #dadce0;font-weight:600;font-size:.95rem;min-height:50px}
+  .btn-google svg{width:20px;height:20px}
+  .carregando-bolinha{width:34px;height:34px;border-radius:50%;border:3px solid var(--borda);border-top-color:var(--ouro);animation:gira .8s linear infinite;margin:0 auto}
+  @keyframes gira{to{transform:rotate(360deg)}}
+
+  /* Topo do app */
+  .app-top{background:var(--azul-fixo);color:#fff;padding:.7rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.6rem;position:sticky;top:0;z-index:80;padding-top:max(.7rem, env(safe-area-inset-top));padding-left:max(1rem, env(safe-area-inset-left));padding-right:max(1rem, env(safe-area-inset-right))}
+  .app-top .marca{display:flex;align-items:center;gap:.6rem;min-width:0}
+  .app-top .marca img{width:34px;height:34px;border-radius:9px;background:#fff}
+  .app-top .marca strong{font-family:'Playfair Display',Georgia,serif;font-size:1.15rem;color:#fff}
+  .app-top .marca span{display:block;font-size:.68rem;color:var(--ouro);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .app-top .ola{font-size:.78rem;color:rgba(255,255,255,.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45vw}
+  main{max-width:640px;margin:0 auto;padding:1rem;padding-left:max(1rem, env(safe-area-inset-left));padding-right:max(1rem, env(safe-area-inset-right));padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+  .titulo-view{font-family:'Playfair Display',Georgia,serif;font-size:1.45rem;margin:.3rem 0 .2rem}
+  .sub-view{color:var(--texto-2);font-size:.85rem;margin:0 0 1rem}
+
+  /* Navegação inferior */
+  .navbar-inferior{position:fixed;left:0;right:0;bottom:0;background:var(--superficie);border-top:1px solid var(--borda);display:flex;z-index:70;padding-bottom:max(4px, env(safe-area-inset-bottom));padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+  .nav-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 1px 6px;color:var(--texto-3);font-size:.64rem;font-weight:700;cursor:pointer;border:none;background:transparent;font-family:inherit;line-height:1.15}
+  .nav-item span{display:block;width:100%;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nav-item svg{width:22px;height:22px}
+  .nav-item.ativa{color:var(--azul)}
+  .view{display:none}
+  .view.ativa{display:block}
+
+  /* Início */
+  .acoes-grandes{display:grid;gap:.8rem;margin-bottom:1.2rem}
+  .acao-grande{display:flex;align-items:center;gap:.9rem;width:100%;text-align:left;border-radius:16px;padding:1.05rem 1.1rem;cursor:pointer;font-family:inherit;border:1px solid var(--borda);background:var(--superficie);color:var(--texto);box-shadow:0 1px 3px rgba(19,33,94,.06)}
+  .acao-grande .ic{flex-shrink:0;width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:var(--creme);color:var(--azul-fixo)}
+  .acao-grande .ic svg{width:24px;height:24px}
+  .acao-grande strong{display:block;font-size:1rem;color:var(--azul)}
+  .acao-grande small{display:block;font-size:.8rem;color:var(--texto-2);margin-top:2px;line-height:1.4}
+  .acao-grande.principal{background:var(--azul-fixo);border-color:var(--azul-fixo)}
+  .acao-grande.principal strong{color:#fff}
+  .acao-grande.principal small{color:rgba(255,255,255,.8)}
+  .acao-grande.principal .ic{background:var(--ouro)}
+  .secao-tit{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;margin:0 0 .6rem}
+  .secao-tit h3{font-size:.95rem}
+  .secao-tit span{font-size:.78rem;color:var(--texto-2);font-weight:600}
+
+  .lanche{background:var(--superficie);border:1px solid var(--borda);border-radius:14px;padding:.85rem .95rem;margin-bottom:.6rem}
+  .lanche-topo{display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem}
+  .lanche-nome{font-weight:700;font-size:.95rem;color:var(--texto)}
+  .lanche-desc{font-size:.85rem;color:var(--texto-2);line-height:1.5;margin-top:.25rem;white-space:pre-wrap;word-break:break-word}
+  .lanche-rodape{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.55rem}
+  .lanche-quem{font-size:.72rem;color:var(--texto-3)}
+  .lanche-acoes{display:flex;gap:.2rem}
+  .tag{display:inline-block;font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:3px 8px;border-radius:20px;white-space:nowrap}
+  .tag-colab{background:var(--creme);color:#7A5A12}
+  .tag-dir{background:#E3E8F7;color:var(--azul-fixo)}
+  .tag-admin{background:var(--ouro-claro);color:#8A5A10}
+  .icon-btn{background:transparent;border:none;color:var(--texto-2);padding:7px;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;min-width:36px;min-height:36px}
+  .icon-btn svg{width:18px;height:18px}
+  .icon-btn.perigo{color:var(--vermelho)}
+
+  /* Formulário de lanche */
+  .grupo-tit{font-size:.72rem;font-weight:800;color:var(--texto-2);text-transform:uppercase;letter-spacing:.06em;margin:1rem 0 .45rem}
+  .op-linha{display:flex;align-items:center;gap:.7rem;border:1px solid var(--borda-forte);border-radius:12px;padding:.55rem .6rem .55rem .75rem;margin-bottom:.45rem;background:var(--superficie);min-height:52px}
+  .op-linha.marcada{border-color:var(--azul);background:var(--superficie-2)}
+  .op-toque{flex:1;display:flex;align-items:center;gap:.7rem;background:transparent;border:none;padding:0;font-family:inherit;font-size:.92rem;color:var(--texto);text-align:left;cursor:pointer;min-height:40px}
+  .marcador{flex-shrink:0;width:24px;height:24px;border-radius:7px;border:2px solid var(--borda-forte);display:flex;align-items:center;justify-content:center;color:transparent}
+  .marcador svg{width:15px;height:15px}
+  .op-linha.marcada .marcador{background:var(--azul-fixo);border-color:var(--azul-fixo);color:#fff}
+  .seg{display:flex;border:1px solid var(--borda-forte);border-radius:10px;overflow:hidden;flex-shrink:0}
+  .seg.quatro button{width:38px}
+  .seg.quatro .un{display:none}
+  .seg button{width:42px;height:38px;border:none;background:transparent;font-family:inherit;font-weight:800;font-size:.95rem;color:var(--texto-2);cursor:pointer}
+  .seg button+button{border-left:1px solid var(--borda-forte)}
+  .seg button.ativa{background:var(--ouro);color:var(--azul-fixo)}
+  .seg .un{font-size:.6rem;font-weight:700;display:block;margin-top:-2px}
+  .lista-nomes{max-height:44vh;overflow:auto;border:1px solid var(--borda);border-radius:12px;margin-bottom:.8rem}
+  .item-nome{display:flex;align-items:center;justify-content:space-between;gap:.5rem;width:100%;padding:.8rem .9rem;border:none;border-bottom:1px solid var(--borda);background:var(--superficie);font-family:inherit;font-size:.92rem;color:var(--texto);text-align:left;cursor:pointer;min-height:48px}
+  .item-nome:last-child{border-bottom:none}
+  .item-nome:active{background:var(--ouro-claro)}
+  .ja-lancado{font-size:.66rem;font-weight:800;color:var(--verde);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+  .escolhido{display:flex;align-items:center;justify-content:space-between;gap:.6rem;background:var(--creme);border-radius:12px;padding:.75rem .9rem;margin-bottom:.4rem}
+  .escolhido strong{color:var(--azul-fixo);font-size:.98rem}
+  .aviso-dup{font-size:.78rem;color:#9A6A12;margin:.2rem 0 .6rem;font-weight:600}
+  .resumo-form{font-size:.84rem;color:var(--texto-2);background:var(--superficie-2);border-radius:10px;padding:.7rem .8rem;margin:.9rem 0 .8rem;line-height:1.5}
+  .resumo-form strong{color:var(--texto)}
+
+  /* Relatório */
+  .seletor-data{display:flex;gap:.5rem;align-items:center;margin-bottom:1rem}
+  .seletor-data input{margin:0;flex:1;text-align:center}
+  .seletor-data .btn{flex-shrink:0;width:46px;padding:0}
+  .resumo-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+  .resumo-card{background:var(--superficie);border:1px solid var(--borda);border-radius:14px;padding:.8rem .5rem;text-align:center}
+  .resumo-card .num{font-size:1.4rem;font-weight:800;color:var(--azul)}
+  .resumo-card .lbl{font-size:.64rem;color:var(--texto-2);text-transform:uppercase;font-weight:700;letter-spacing:.03em}
+  .tabela-itens{width:100%;border-collapse:collapse;font-size:.88rem}
+  .tabela-itens td{padding:.55rem 0;border-bottom:1px solid var(--borda)}
+  .tabela-itens tr:last-child td{border-bottom:none}
+  .tabela-itens td:last-child{text-align:right;font-weight:800;color:var(--azul)}
+  .tabela-itens .grupo td{text-align:left!important;color:var(--texto-3)!important;font-size:.68rem;font-weight:800;color:var(--texto-3);text-transform:uppercase;letter-spacing:.05em;padding-top:.9rem;border-bottom:none}
+
+  /* Cadastros */
+  .abas{display:flex;background:var(--superficie-2);border-radius:12px;padding:4px;margin-bottom:1rem;gap:4px}
+  .aba{flex:1;border:none;background:transparent;font-family:inherit;font-weight:700;font-size:.82rem;color:var(--texto-2);padding:.6rem .3rem;border-radius:9px;cursor:pointer}
+  .aba.ativa{background:var(--superficie);color:var(--azul);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .linha-add{display:flex;gap:.5rem}
+  .linha-add input{margin:0}
+  .linha-add .btn{flex-shrink:0}
+  .item-cad{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.65rem 0;border-bottom:1px solid var(--borda)}
+  .item-cad:last-child{border-bottom:none}
+  .item-cad .info{min-width:0}
+  .item-cad .info strong{display:block;font-size:.92rem;color:var(--texto);overflow:hidden;text-overflow:ellipsis}
+  .item-cad .info small{display:block;font-size:.76rem;color:var(--texto-2);overflow:hidden;text-overflow:ellipsis;word-break:break-all}
+  .item-cad .acoes{display:flex;gap:.1rem;flex-shrink:0}
+  .check-linha{display:flex;align-items:center;gap:.6rem;font-size:.88rem;margin:-.3rem 0 1rem;color:var(--texto)}
+  .check-linha input{width:20px;height:20px}
+
+  /* Perfil (igual ao Portal) */
+  .perfil-cabecalho{display:flex;flex-direction:column;align-items:center;text-align:center;margin:.4rem 0 1.1rem}
+  .perfil-foto{width:88px;height:88px;border-radius:50%;background:var(--azul-fixo);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:800;overflow:hidden}
+  .perfil-foto img{width:100%;height:100%;object-fit:cover}
+  .perfil-foto-caixa{position:relative;width:88px;margin:0 auto .7rem}
+  .perfil-foto-botao{position:absolute;right:-2px;bottom:-2px;width:32px;height:32px;border-radius:50%;border:2px solid var(--superficie);background:var(--ouro);color:var(--azul-fixo);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+  .perfil-foto-botao svg{width:15px;height:15px}
+  .perfil-cabecalho h1{font-size:1.25rem}
+  .perfil-email{color:var(--texto-2);font-size:.85rem;margin:3px 0 .4rem;word-break:break-all}
+  .cartao-topo{display:flex;align-items:center;justify-content:space-between;gap:.8rem;cursor:pointer}
+  .cartao-seta{display:flex;color:var(--texto-3)}
+  .cartao-seta svg{width:17px;height:17px;transition:transform .15s}
+  .cartao-seta.aberta svg{transform:rotate(90deg)}
+  .rotulo-op{display:block;font-size:.88rem;font-weight:800;color:var(--azul)}
+  .ajuda-op{font-size:.78rem;color:var(--texto-2);line-height:1.5;margin:.15rem 0 0}
+  .opcoes-texto{display:flex;gap:.5rem;margin-top:.6rem}
+  .op-texto{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:.6rem .3rem;border:1px solid var(--borda-forte);border-radius:12px;background:transparent;color:var(--texto-2);font-family:inherit;cursor:pointer}
+  .op-texto.ativa{border-color:var(--azul);color:var(--azul);background:var(--superficie-2)}
+  .op-nome{font-size:.72rem;font-weight:700}
+  .linha-chave{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .chave{width:48px;height:28px;border-radius:20px;border:none;background:var(--borda-forte);position:relative;cursor:pointer;flex-shrink:0;padding:0;transition:background .18s}
+  .chave .bolinha{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .18s}
+  .chave.ligada{background:var(--ouro)}
+  .chave.ligada .bolinha{transform:translateX(20px)}
+  .estrelas{display:flex;gap:.3rem}
+  .estrela{background:transparent;border:none;padding:4px;cursor:pointer;color:#D9D4C3}
+  .estrela svg{width:30px;height:30px}
+  .estrela.cheia{color:var(--ouro)}
+
+  /* Modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(19,33,94,.55);z-index:210;display:none;align-items:flex-end;justify-content:center}
+  .modal-overlay.aberto{display:flex}
+  .modal-box{background:var(--superficie);border-radius:18px 18px 0 0;width:100%;max-width:560px;max-height:92vh;max-height:92dvh;overflow:auto;-webkit-overflow-scrolling:touch;padding:1.2rem;padding-bottom:max(1.2rem, env(safe-area-inset-bottom))}
+  @media (min-width:600px){ .modal-overlay{align-items:center} .modal-box{border-radius:18px} }
+  .topo-modal{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;gap:1rem}
+  .topo-modal h3{font-size:1.05rem}
+
+  .aviso-rapido{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--azul-fixo);color:#fff;padding:.7rem 1.1rem;border-radius:24px;font-size:.85rem;font-weight:600;box-shadow:0 4px 16px rgba(19,33,94,.3);z-index:300;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;max-width:88vw;text-align:center}
+  .aviso-rapido.visivel{opacity:1;transform:translate(-50%,0)}
+  .aviso-rapido.erro{background:#C0392B}
+
+  /* Acessibilidade */
+  html.texto-grande{font-size:18px}
+  html.texto-maior{font-size:20px}
+  .btn-voz{position:fixed;right:14px;bottom:calc(76px + env(safe-area-inset-bottom));width:48px;height:48px;border-radius:50%;border:none;background:var(--superficie);color:var(--azul);box-shadow:0 3px 12px rgba(19,33,94,.22);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:65}
+  .btn-voz svg{width:22px;height:22px}
+  .btn-voz.lendo{background:var(--ouro);color:var(--azul-fixo)}
+  body.contraste{--texto:#000;--texto-2:#2B3A4A;--texto-3:#3E4E63;--borda:#98A3B4;--borda-forte:#5F6B80;--linha:#C7CCD6}
+  body.contraste .btn-outline{border-width:2px}
+
+  /* ===== Modo escuro ===== Só troca superfícies e textos; azul e dourado da marca continuam. */
+  body.escuro{
+    --fundo:#12151C; --superficie:#1B1F29; --superficie-2:#232834; --linha:#2C313D; --campo:#232834;
+    --borda:#2C313D; --borda-forte:#3A414F; --azul:#8FA6E8; --texto:#E6E9EF; --texto-2:#AAB4C4; --texto-3:#7E889A;
+    --ouro-claro:#2A2519; --creme:#2E2A1E; --verde:#4CC79B; --vermelho:#FF8A7A;
+    background:var(--fundo); color:var(--texto);
+  }
+  body.escuro h1,body.escuro h2,body.escuro h3,body.escuro h4{color:#E6E9EF}
+  body.escuro .app-top{background:#0D1017}
+  body.escuro .btn-azul{background:#2D3E7A;color:#fff}
+  body.escuro .btn-outline{background:transparent;color:#E6E9EF}
+  body.escuro .acao-grande.principal{background:#2D3E7A;border-color:#2D3E7A}
+  body.escuro .acao-grande .ic{color:var(--ouro)}
+  body.escuro .acao-grande.principal .ic{color:var(--azul-fixo)}
+  body.escuro .escolhido strong{color:#F1D9A8}
+  body.escuro .tag-colab{background:#3A2F18;color:#E0B25C}
+  body.escuro .tag-dir{background:#252E4D;color:#B6C4F0}
+  body.escuro .tag-admin{background:#3A2F18;color:#E0B25C}
+  body.escuro .op-linha.marcada .marcador{background:#2D3E7A;border-color:#8FA6E8}
+  body.escuro .aviso-dup{color:#E0B25C}
+  body.escuro .modal-overlay{background:rgba(0,0,0,.6)}
+  body.escuro .aba.ativa{background:#2D3E7A;color:#fff}
+  body.escuro .estrela{color:#3A414F}
+  body.escuro .estrela.cheia{color:var(--ouro)}
+  body.escuro input[type="date"]{color-scheme:dark}
+  body.escuro .card,body.escuro .acao-grande,body.escuro .lanche,body.escuro .resumo-card{box-shadow:none}
+  body.escuro.contraste{--texto:#fff;--texto-2:#E9ECF2;--texto-3:#CBD2DE;--borda:#5E6A80;--borda-forte:#8C97AC;--linha:#4B5466}
+
+  /* Impressão do relatório: só a folha preparada aparece, sempre em branco */
+  #area-impressao{display:none}
+  @media print{
+    body{background:#fff!important}
+    body > *:not(#area-impressao){display:none!important}
+    #area-impressao{display:block;color:#000;font-family:Inter,Arial,sans-serif;font-size:12px}
+    #area-impressao h2{color:#13215E;font-family:'Playfair Display',Georgia,serif;font-size:20px;margin:0 0 4px}
+    #area-impressao table{width:100%;border-collapse:collapse;margin:10px 0}
+    #area-impressao th,#area-impressao td{border:1px solid #bbb;padding:5px 7px;text-align:left;vertical-align:top}
+    #area-impressao th{background:#F5F0DC}
+  }
+</style>
+</head>
+<body>
+
+<div id="tela-carregando" class="tela-cheia"><div class="carregando-bolinha"></div></div>
+
+<div id="tela-login" class="tela-cheia hidden">
+  <div class="caixa-login">
+    <img class="logo" src="icon-192.png" alt="Pão & Tradição">
+    <h1>Lanches</h1>
+    <div class="sub">Pão &amp; Tradição · controle de lanches</div>
+    <div class="card">
+      <p style="font-size:.86rem;color:var(--texto-2);line-height:1.6;margin:0 0 1rem">Entre com a sua conta Google. O acesso precisa ter sido liberado pela administração.</p>
+      <button class="btn btn-google" id="btn-google" onclick="entrarComGoogle()">
+        <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.2l7.9 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.6 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.2C1 16.6 0 20.2 0 24s1 7.4 2.7 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.1 1.4-4.9 2.3-8.2 2.3-6.2 0-11.5-4.1-13.4-9.9l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg>
+        Entrar com Google
+      </button>
+      <div class="erro" id="login-erro" style="margin:.8rem 0 0"></div>
+    </div>
+    <button type="button" class="btn btn-outline btn-full btn-instalar" onclick="instalarApp()">Instalar aplicativo no celular</button>
+  </div>
+</div>
+
+<div id="tela-primeiro" class="tela-cheia hidden">
+  <div class="caixa-login">
+    <img class="logo" src="icon-192.png" alt="">
+    <h1>Bem-vinda</h1>
+    <div class="sub">Primeiro acesso ao app de lanches</div>
+    <div class="card">
+      <p style="font-size:.86rem;color:var(--texto-2);line-height:1.6;margin:0 0 1rem">Ninguém usou o app ainda. Você será a administradora e poderá liberar o acesso das outras pessoas.</p>
+      <label for="f-primeiro-nome">Seu nome</label>
+      <input id="f-primeiro-nome" autocomplete="name" placeholder="Como você quer aparecer">
+      <div class="erro" id="primeiro-erro"></div>
+      <button class="btn btn-azul btn-full" onclick="concluirPrimeiroAcesso()">Começar</button>
+      <button class="btn btn-outline btn-full" style="margin-top:.6rem" onclick="sair()">Usar outra conta</button>
+    </div>
+  </div>
+</div>
+
+<div id="tela-bloqueado" class="tela-cheia hidden">
+  <div class="caixa-login">
+    <img class="logo" src="icon-192.png" alt="">
+    <h1>Acesso não liberado</h1>
+    <div class="card">
+      <p style="font-size:.88rem;color:var(--texto-2);line-height:1.6;margin:0 0 .6rem">A conta abaixo ainda não tem acesso ao app. Peça para a administração cadastrar este e-mail:</p>
+      <p id="bloqueado-email" style="font-weight:700;color:var(--texto);word-break:break-all;margin:0 0 1rem"></p>
+      <button class="btn btn-azul btn-full" onclick="verificarDeNovo()">Já liberaram, tentar de novo</button>
+      <button class="btn btn-outline btn-full" style="margin-top:.6rem" onclick="sair()">Sair e usar outra conta</button>
+    </div>
+  </div>
+</div>
+
+<div id="app-shell" class="hidden">
+  <header class="app-top">
+    <div class="marca">
+      <img src="icon-192.png" alt="">
+      <div><strong>Lanches</strong><span>Pão &amp; Tradição</span></div>
+    </div>
+    <div class="ola" id="topo-ola"></div>
+  </header>
+
+  <main>
+    <section class="view" id="view-inicio"></section>
+    <section class="view" id="view-relatorio"></section>
+    <section class="view" id="view-cadastros"></section>
+    <section class="view" id="view-perfil"></section>
+  </main>
+
+  <nav class="navbar-inferior" id="navbar"></nav>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this) fecharModal()">
+  <div class="modal-box" id="modal-box" role="dialog" aria-modal="true"></div>
+</div>
+
+<button class="btn-voz hidden" id="btn-voz" onclick="lerTelaAtual()" aria-label="Ouvir esta tela"></button>
+<div class="aviso-rapido" id="aviso-rapido" role="status" aria-live="polite"></div>
+<div id="area-impressao"></div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, collection, collectionGroup, query, where, onSnapshot, writeBatch, arrayUnion, arrayRemove, deleteField } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDxqR1prLfA8PLZ2suL0PgH60gUpsfWwNM",
+    authDomain: "gestao-controle-6c8c4.firebaseapp.com",
+    projectId: "gestao-controle-6c8c4",
+    storageBucket: "gestao-controle-6c8c4.firebasestorage.app",
+    messagingSenderId: "1030251275499",
+    appId: "1:1030251275499:web:bd7342445ee2fe7f7acaae"
+  };
+  // Login no próprio endereço do app: os arquivos de login do Google ficam em /__/auth/ no mesmo
+  // domínio. Isso evita o bloqueio do iPhone com o app instalado na tela de início. Se os arquivos
+  // não estiverem lá, usa o endereço padrão do Firebase.
+  const loginNoProprioDominio = await (async function(){
+    if(location.protocol !== 'https:') return false;
+    try{
+      const c = new AbortController();
+      const t = setTimeout(function(){ c.abort(); }, 2500);
+      const r = await fetch('/__/auth/handler.js', { method:'HEAD', cache:'no-store', signal:c.signal });
+      clearTimeout(t);
+      return r.ok;
+    }catch(e){ return false; }
+  })();
+  if(loginNoProprioDominio) firebaseConfig.authDomain = location.host;
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  auth.languageCode = 'pt';
+  const db = getFirestore(app);
+
+  // ===== Ícones (SVG, sem emojis) =====
+  const S = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
+  const ICONES = {
+    inicio: S+'<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+    relatorio: S+'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>',
+    cadastros: S+'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
+    perfil: S+'<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    cafe: S+'<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>',
+    escrever: S+'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>',
+    fechar: S+'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    editar: S+'<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4z"/></svg>',
+    excluir: S+'<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>',
+    mais: S+'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+    esquerda: S+'<polyline points="15 18 9 12 15 6"/></svg>',
+    direita: S+'<polyline points="9 18 15 12 9 6"/></svg>',
+    seta: S+'<polyline points="9 18 15 12 9 6"/></svg>',
+    imprimir: S+'<polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>',
+    camera: S+'<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+    som: S+'<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a10 10 0 010 14"/></svg>',
+    estrela: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15.1 8.6 22 9.6 17 14.5 18.2 21.4 12 18.1 5.8 21.4 7 14.5 2 9.6 8.9 8.6 12 2"/></svg>',
+    escudo: S+'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+    sair: S+'<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'
+  };
+  function icone(n){ return ICONES[n] || ''; }
+
+  // ===== Opções fixas do lanche de colaborador =====
+  const GRUPOS = [
+    { nome:'Bebida', itens:[
+      { k:'cafeLeite', n:'Média de café com leite', um:'média de café com leite', varias:'médias de café com leite', qtd:true },
+      { k:'cafe', n:'Média de café', um:'média de café', varias:'médias de café', qtd:true },
+      { k:'refresco', n:'Refresco', um:'refresco', varias:'refrescos', qtd:true }
+    ]},
+    { nome:'Pão', itens:[
+      { k:'pao', n:'Pão francês', um:'pão francês', varias:'pães franceses', qtd:true }
+    ]},
+    { nome:'Recheio', fatia:true, max:4, itens:[
+      { k:'mortadela', n:'Mortadela', qtd:true },
+      { k:'mortadelaDef', n:'Mortadela defumada', qtd:true },
+      { k:'presunto', n:'Presunto', qtd:true }
+    ]},
+    { nome:'Molho', itens:[
+      { k:'manteiga', n:'Manteiga', qtd:false },
+      { k:'maionese', n:'Maionese', qtd:false }
+    ]}
+  ];
+  const TODOS_ITENS = [];
+  GRUPOS.forEach(function(g){ g.itens.forEach(function(i){ i.fatia = !!g.fatia; i.max = g.max || 2; TODOS_ITENS.push(i); }); });
+
+  function descreverItens(itens){
+    const partes = [];
+    TODOS_ITENS.forEach(function(i){
+      const q = Number((itens||{})[i.k] || 0);
+      if(!q) return;
+      if(!i.qtd) partes.push(i.n);
+      else if(i.fatia) partes.push(q+' '+(q>1?'fatias':'fatia')+' de '+i.n);
+      else partes.push(q+' '+(q>1?i.varias:i.um));
+    });
+    const t = partes.join(', ');
+    return t ? t.charAt(0).toUpperCase()+t.slice(1) : '';
+  }
+
+  // ===== Utilidades =====
+  function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function doisDig(n){ return String(n).padStart(2,'0'); }
+  function dataISO(d){ return d.getFullYear()+'-'+doisDig(d.getMonth()+1)+'-'+doisDig(d.getDate()); }
+  function hoje(){ return dataISO(new Date()); }
+  function somarDias(iso, n){ const p = iso.split('-').map(Number); const d = new Date(p[0], p[1]-1, p[2]); d.setDate(d.getDate()+n); return dataISO(d); }
+  const DIAS = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+  function dataExtenso(iso){
+    const p = iso.split('-').map(Number); const d = new Date(p[0], p[1]-1, p[2]);
+    return DIAS[d.getDay()]+', '+doisDig(p[2])+'/'+doisDig(p[1])+'/'+p[0];
+  }
+  function dataCurta(iso){ const p = iso.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+  function hora(isoCompleto){ if(!isoCompleto) return ''; const d = new Date(isoCompleto); return isNaN(d) ? '' : doisDig(d.getHours())+':'+doisDig(d.getMinutes()); }
+  function primeiroNome(n){ return String(n||'').trim().split(/\s+/)[0] || ''; }
+  function normalizar(t){ return String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+  function porNome(a,b){ return String(a.nome||'').localeCompare(String(b.nome||''), 'pt-BR', {sensitivity:'base'}); }
+
+  let tempoAviso = null;
+  window.avisar = function(texto, ehErro){
+    const el = document.getElementById('aviso-rapido');
+    el.textContent = texto;
+    el.classList.toggle('erro', !!ehErro);
+    el.classList.add('visivel');
+    clearTimeout(tempoAviso);
+    tempoAviso = setTimeout(function(){ el.classList.remove('visivel'); }, 2800);
+  };
+  function abrirModal(html){
+    document.getElementById('modal-box').innerHTML = html;
+    document.getElementById('modal-overlay').classList.add('aberto');
+    document.getElementById('modal-box').scrollTop = 0;
+  }
+  window.fecharModal = function(){
+    document.getElementById('modal-overlay').classList.remove('aberto');
+    document.getElementById('modal-box').innerHTML = '';
+  };
+  function topoModal(titulo){
+    return '<div class="topo-modal"><h3>'+esc(titulo)+'</h3><button class="icon-btn" onclick="fecharModal()" aria-label="Fechar">'+icone('fechar')+'</button></div>';
+  }
+  function mensagemErro(e){
+    const c = (e && e.code) || '';
+    if(c.indexOf('permission-denied')>=0) return 'Sem permissão para isso.';
+    if(c.indexOf('unavailable')>=0) return 'Sem conexão. Tente de novo.';
+    return 'Não foi possível concluir. Tente de novo.';
+  }
+
+  // ===== Preferências do aparelho (somente visual: tema, texto, contraste, voz) =====
+  function preferencia(chave, padrao){ try{ return localStorage.getItem('lanches-'+chave) || padrao; }catch(e){ return padrao; } }
+  function definirPreferencia(chave, valor){ try{ localStorage.setItem('lanches-'+chave, valor); }catch(e){} }
+  const midiaEscura = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  function temaEscuroLigado(){
+    const t = preferencia('tema', '');
+    if(t) return t === 'escuro';
+    return !!(midiaEscura && midiaEscura.matches);
+  }
+  function aplicarTema(){
+    const escuro = temaEscuroLigado();
+    document.body.classList.toggle('escuro', escuro);
+    document.documentElement.classList.remove('pre-escuro');
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.setAttribute('content', escuro ? '#0D1017' : '#13215E');
+  }
+  if(midiaEscura){
+    const seguirSistema = function(){ if(!preferencia('tema','')){ aplicarTema(); desenharCartaoTema(); } };
+    if(midiaEscura.addEventListener) midiaEscura.addEventListener('change', seguirSistema);
+    else if(midiaEscura.addListener) midiaEscura.addListener(seguirSistema);
+  }
+  function aplicarAcessibilidade(){
+    const raiz = document.documentElement;
+    const tamanho = preferencia('texto','normal');
+    raiz.classList.toggle('texto-grande', tamanho==='grande');
+    raiz.classList.toggle('texto-maior', tamanho==='maior');
+    document.body.classList.toggle('contraste', preferencia('contraste','nao')==='sim');
+    const botaoVoz = document.getElementById('btn-voz');
+    const logado = !document.getElementById('app-shell').classList.contains('hidden');
+    botaoVoz.classList.toggle('hidden', !(logado && preferencia('voz','nao')==='sim'));
+  }
+  window.alternarTema = function(){
+    definirPreferencia('tema', temaEscuroLigado() ? 'claro' : 'escuro');
+    aplicarTema(); desenharCartaoTema();
+  };
+  window.alternarContraste = function(){
+    definirPreferencia('contraste', preferencia('contraste','nao')==='sim' ? 'nao' : 'sim');
+    aplicarAcessibilidade(); desenharCartaoTema();
+  };
+  window.alternarVoz = function(){
+    const ligando = preferencia('voz','nao') !== 'sim';
+    definirPreferencia('voz', ligando ? 'sim' : 'nao');
+    if(!ligando) pararLeitura();
+    aplicarAcessibilidade(); desenharCartaoTema();
+    if(ligando) avisar('O botão de ouvir aparece no canto da tela.');
+  };
+  window.definirTamanhoTexto = function(valor){
+    definirPreferencia('texto', valor);
+    aplicarAcessibilidade(); desenharCartaoTema();
+    avisar('Tamanho do texto ajustado.');
+  };
+  function pararLeitura(){
+    if(window.speechSynthesis) window.speechSynthesis.cancel();
+    document.getElementById('btn-voz').classList.remove('lendo');
+  }
+  window.lerTelaAtual = function(){
+    if(!window.speechSynthesis){ avisar('Este aparelho não faz leitura em voz alta.', true); return; }
+    if(window.speechSynthesis.speaking){ pararLeitura(); return; }
+    const modalAberto = document.getElementById('modal-overlay').classList.contains('aberto');
+    const tela = modalAberto ? document.getElementById('modal-box') : document.querySelector('.view.ativa');
+    const texto = (tela ? (tela.innerText || tela.textContent || '') : '').replace(/\s+/g,' ').trim();
+    if(!texto){ avisar('Nada para ler nesta tela.', true); return; }
+    const fala = new SpeechSynthesisUtterance(texto.slice(0, 4000));
+    fala.lang = 'pt-BR'; fala.rate = 0.95;
+    fala.onend = pararLeitura; fala.onerror = pararLeitura;
+    document.getElementById('btn-voz').classList.add('lendo');
+    window.speechSynthesis.speak(fala);
+  };
+  document.getElementById('btn-voz').innerHTML = icone('som');
+  aplicarTema();
+  aplicarAcessibilidade();
+
+  // ===== Instalar como aplicativo =====
+  if('serviceWorker' in navigator){
+    // O módulo pode terminar depois do evento load (ele espera a checagem do login), então
+    // registra na hora se a página já carregou.
+    const registrar = function(){
+      navigator.serviceWorker.register('service-worker.js').then(function(reg){
+        reg.update();
+        setInterval(function(){ reg.update(); }, 30*60*1000);
+      }).catch(function(e){ console.warn('Service worker não registrado', e); });
+      // Recarrega uma vez quando chega versão nova, mas só se já havia uma versão antes.
+      const tinhaVersaoAnterior = !!navigator.serviceWorker.controller;
+      let jaRecarregou = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function(){
+        if(!tinhaVersaoAnterior || jaRecarregou) return;
+        jaRecarregou = true; location.reload();
+      });
+    };
+    if(document.readyState === 'complete') registrar(); else window.addEventListener('load', registrar);
+  }
+  // ===== Atualização automática =====
+  // Sempre que o index.html mudar no GitHub, o app recarrega sozinho com a versão nova.
+  // Confere ao abrir, ao voltar para o app e a cada 5 minutos. Se houver uma janela aberta
+  // (lançamento em andamento), espera ela fechar para não perder o que foi digitado.
+  let versaoCarregada = null;
+  let atualizacaoPendente = false;
+  async function resumoTexto(texto){
+    if(!(window.crypto && crypto.subtle)) return String(texto.length);
+    const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto));
+    return Array.from(new Uint8Array(b)).slice(0,12).map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
+  }
+  async function verificarAtualizacao(){
+    try{
+      const r = await fetch('index.html?nc='+Date.now(), { cache:'no-store' });
+      if(!r.ok) return;
+      const v = await resumoTexto(await r.text());
+      if(!versaoCarregada){ versaoCarregada = v; return; }
+      if(v !== versaoCarregada) aplicarAtualizacao();
+    }catch(e){ /* sem internet: tenta de novo depois */ }
+  }
+  function aplicarAtualizacao(){
+    if(document.getElementById('modal-overlay').classList.contains('aberto')){ atualizacaoPendente = true; return; }
+    location.reload();
+  }
+  verificarAtualizacao();
+  setInterval(verificarAtualizacao, 5*60*1000);
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState === 'visible') verificarAtualizacao(); });
+
+  let promptInstalacao = null;
+  function jaEstaInstalado(){
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  }
+  function esconderBotaoInstalar(){ document.querySelectorAll('.btn-instalar').forEach(function(b){ b.classList.add('hidden'); }); }
+  if(jaEstaInstalado()) esconderBotaoInstalar();
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); promptInstalacao = e; });
+  window.addEventListener('appinstalled', esconderBotaoInstalar);
+  window.instalarApp = async function(){
+    if(promptInstalacao){
+      promptInstalacao.prompt();
+      const escolha = await promptInstalacao.userChoice;
+      promptInstalacao = null;
+      if(escolha && escolha.outcome === 'accepted') esconderBotaoInstalar();
+      return;
+    }
+    const ua = navigator.userAgent || '';
+    const ehIphone = /iPhone|iPad|iPod/i.test(ua);
+    const passos = ehIphone
+      ? '<li>Toque no botão <strong>Compartilhar</strong> (o quadrado com a seta para cima), na barra do Safari.</li>'+
+        '<li>Deslize e escolha <strong>Adicionar à Tela de Início</strong>.</li>'+
+        '<li>Toque em <strong>Adicionar</strong>, no canto superior direito.</li>'+
+        '<li>Se estiver em outro navegador, abra este endereço no Safari primeiro.</li>'
+      : '<li>Toque no botão de <strong>menu</strong> do navegador (os três pontinhos).</li>'+
+        '<li>Escolha <strong>Instalar aplicativo</strong> ou <strong>Adicionar à tela inicial</strong>.</li>'+
+        '<li>Confirme. O ícone do Lanches aparece junto dos seus outros aplicativos.</li>';
+    abrirModal(topoModal('Como instalar')+
+      '<ol style="font-size:.9rem;line-height:1.7;color:var(--texto);padding-left:1.2rem;margin:0 0 1.1rem">'+passos+'</ol>'+
+      '<button class="btn btn-azul btn-full" onclick="fecharModal()">Entendi</button>');
+  };
+
+  // ===== Login com Google =====
+  let usuarioAtual = null;      // ficha do Firestore
+  let emailAtual = '';
+  let fotoGoogle = '';
+  let vigias = [];              // escutas em tempo real abertas
+  let vigiaUsuario = null;
+
+  function mostrarTela(id){
+    ['tela-carregando','tela-login','tela-primeiro','tela-bloqueado','app-shell'].forEach(function(t){
+      document.getElementById(t).classList.toggle('hidden', t !== id);
+    });
+    aplicarAcessibilidade();
+  }
+  window.entrarComGoogle = async function(){
+    const erro = document.getElementById('login-erro');
+    erro.textContent = '';
+    const provedor = new GoogleAuthProvider();
+    provedor.setCustomParameters({ prompt:'select_account' });
+    const btn = document.getElementById('btn-google');
+    btn.disabled = true;
+    try{
+      // iPhone com o app instalado: a janela de login não volta para o app, então vai pela página inteira.
+      const iphoneInstalado = /iPhone|iPad|iPod/i.test(navigator.userAgent || '') && jaEstaInstalado();
+      if(iphoneInstalado && loginNoProprioDominio){ await signInWithRedirect(auth, provedor); return; }
+      await signInWithPopup(auth, provedor);
+    }catch(e){
+      const c = (e && e.code) || '';
+      if(c === 'auth/popup-blocked' || c === 'auth/operation-not-supported-in-this-environment' || c === 'auth/web-storage-unsupported'){
+        try{ await signInWithRedirect(auth, provedor); return; }catch(e2){ console.error(e2); }
+      }
+      if(c === 'auth/popup-closed-by-user' || c === 'auth/cancelled-popup-request'){ /* a pessoa fechou */ }
+      else if(c === 'auth/unauthorized-domain') erro.textContent = 'Este endereço ainda não foi autorizado no Firebase.';
+      else if(c === 'auth/network-request-failed') erro.textContent = 'Sem conexão. Verifique a internet.';
+      else { console.error(e); erro.textContent = 'Não foi possível entrar. Tente de novo.'; }
+    }finally{ btn.disabled = false; }
+  };
+  getRedirectResult(auth).catch(function(e){
+    console.error(e);
+    document.getElementById('login-erro').textContent = 'Não foi possível entrar. Tente de novo.';
+  });
+  window.sair = async function(){
+    if(!document.getElementById('app-shell').classList.contains('hidden') && !confirm('Sair do app?')) return;
+    encerrarVigias();
+    pararLeitura();
+    fecharModal();
+    areaLiberada = false;
+    esquecerArea();
+    await signOut(auth);
+  };
+  function encerrarVigias(){
+    vigias.forEach(function(f){ try{ f(); }catch(e){} });
+    vigias = [];
+    if(vigiaUsuario){ try{ vigiaUsuario(); }catch(e){} vigiaUsuario = null; }
+    fecharTodosMeses();
+    pararCadastros();
+  }
+
+  onAuthStateChanged(auth, async function(user){
+    encerrarVigias();
+    usuarioAtual = null;
+    if(!user){ mostrarTela('tela-login'); return; }
+    mostrarTela('tela-carregando');
+    emailAtual = String(user.email || '').toLowerCase();
+    fotoGoogle = user.photoURL || '';
+    await verificarAcesso(user);
+  });
+
+  async function verificarAcesso(user){
+    try{
+      const ficha = await getDoc(doc(db, 'usuarios', emailAtual));
+      if(ficha.exists()){ entrarNoApp(); return; }
+      const inicio = await getDoc(doc(db, 'config', 'inicial'));
+      if(!inicio.exists()){
+        document.getElementById('f-primeiro-nome').value = (user && user.displayName) || '';
+        mostrarTela('tela-primeiro');
+        return;
+      }
+      document.getElementById('bloqueado-email').textContent = emailAtual;
+      mostrarTela('tela-bloqueado');
+    }catch(e){
+      console.error(e);
+      document.getElementById('bloqueado-email').textContent = emailAtual;
+      mostrarTela('tela-bloqueado');
+      avisar(mensagemErro(e), true);
+    }
+  }
+  // ===== Senha da área de lançados =====
+  // O app abre sem senha; só a área com os lanches lançados pede a senha interna.
+  // Depois de digitada uma vez, o aparelho lembra (para esta conta) até tocar em Bloquear ou Sair.
+  // Se a senha mudar no futuro, o aparelho volta a pedir.
+  // A senha não fica escrita no código, só o resumo (SHA-256) dela.
+  const SENHA_RESUMO = 'e830b6f89cd69de3436655d81a12fb1ff6def30e971f6243fa7e10bb2651f003';
+  let areaLiberada = false;
+  async function resumo(texto){
+    const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto));
+    return Array.from(new Uint8Array(b)).map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
+  }
+  function marcaArea(){ return emailAtual + ':' + SENHA_RESUMO.slice(0,16); }
+  function areaLembrada(){ return preferencia('area','') === marcaArea(); }
+  function esquecerArea(){ try{ localStorage.removeItem('lanches-area'); }catch(e){} }
+  window.conferirSenha = async function(){
+    const campo = document.getElementById('f-senha-interna');
+    const erro = document.getElementById('senha-erro');
+    if(!campo.value){ erro.textContent = 'Digite a senha.'; return; }
+    let ok = false;
+    try{ ok = (await resumo(campo.value)) === SENHA_RESUMO; }catch(e){ console.error(e); }
+    if(!ok){ erro.textContent = 'Senha incorreta.'; campo.select(); return; }
+    areaLiberada = true;
+    definirPreferencia('area', marcaArea());
+    iniciarRelatorio();
+  };
+  window.bloquearArea = function(){ areaLiberada = false; esquecerArea(); iniciarRelatorio(); };
+
+  window.verificarDeNovo = function(){ mostrarTela('tela-carregando'); verificarAcesso(auth.currentUser); };
+
+  window.concluirPrimeiroAcesso = async function(){
+    const nome = document.getElementById('f-primeiro-nome').value.trim();
+    const erro = document.getElementById('primeiro-erro');
+    if(!nome){ erro.textContent = 'Escreva seu nome.'; return; }
+    try{
+      const lote = writeBatch(db);
+      const agora = new Date().toISOString();
+      lote.set(doc(db,'usuarios',emailAtual), { email:emailAtual, nome:nome, admin:true, foto:'', telefone:'', criadoEm:agora });
+      lote.set(doc(db,'config','inicial'), { criadoEm:agora, por:emailAtual });
+      await lote.commit();
+      entrarNoApp();
+    }catch(e){
+      console.error(e);
+      erro.textContent = 'Não foi possível concluir. Confira se as regras do Firestore foram publicadas.';
+    }
+  };
+
+  function entrarNoApp(){
+    let primeiraVez = true;
+    vigiaUsuario = onSnapshot(doc(db,'usuarios',emailAtual), function(snap){
+      if(!snap.exists()){
+        // Acesso removido enquanto o app estava aberto.
+        encerrarVigias();
+        document.getElementById('bloqueado-email').textContent = emailAtual;
+        mostrarTela('tela-bloqueado');
+        return;
+      }
+      const eraAdmin = usuarioAtual && usuarioAtual.admin;
+      usuarioAtual = Object.assign({ id:snap.id }, snap.data());
+      document.getElementById('topo-ola').textContent = 'Olá, '+primeiroNome(usuarioAtual.nome);
+      if(primeiraVez){
+        primeiraVez = false;
+        mostrarTela('app-shell');
+        desenharNav();
+        iniciarInicio();
+        mostrarView(viewAtual || 'inicio');
+      }else{
+        if(eraAdmin !== !!usuarioAtual.admin){
+          desenharNav();
+          if(!usuarioAtual.admin && viewAtual === 'cadastros') mostrarView('inicio');
+        }
+        if(viewAtual === 'relatorio' && areaLiberada) desenharRelatorio();
+        if(viewAtual === 'perfil') renderPerfil();
+      }
+    }, function(e){ console.error(e); });
+  }
+
+  // ===== Navegação =====
+  let viewAtual = 'inicio';
+  function desenharNav(){
+    const itens = [['inicio','Início'],['relatorio','Lançados']];
+    if(usuarioAtual && usuarioAtual.admin) itens.push(['cadastros','Cadastros']);
+    itens.push(['perfil','Perfil']);
+    document.getElementById('navbar').innerHTML = itens.map(function(i){
+      return '<button class="nav-item'+(viewAtual===i[0]?' ativa':'')+'" data-view="'+i[0]+'" onclick="mostrarView(\''+i[0]+'\')">'+icone(i[0])+'<span>'+i[1]+'</span></button>';
+    }).join('');
+  }
+  window.mostrarView = function(v){
+    if(v === 'cadastros' && !(usuarioAtual && usuarioAtual.admin)) v = 'inicio';
+    viewAtual = v;
+    pararLeitura();
+    document.querySelectorAll('.view').forEach(function(el){ el.classList.toggle('ativa', el.id === 'view-'+v); });
+    document.querySelectorAll('.nav-item').forEach(function(el){ el.classList.toggle('ativa', el.dataset.view === v); });
+    if(v !== 'relatorio') pararRelatorio();
+    if(v !== 'cadastros') pararCadastros();
+    if(v === 'relatorio') iniciarRelatorio();
+    if(v === 'cadastros') iniciarCadastros();
+    if(v === 'perfil') renderPerfil();
+    window.scrollTo(0,0);
+  };
+
+  // ===== Dados =====
+  // Os lanches ficam agrupados por pessoa > ano > mês:
+  //   lanches/{pessoa}                      nome da pessoa e lista dos meses que ela tem
+  //   lanches/{pessoa}/anos/{AAAA}/meses/{MM} um documento com todos os lanches do mês
+  // Assim cada leitura traz o mês inteiro de uma pessoa de uma vez, em vez de um documento por lanche.
+  // {pessoa} = c_<id do colaborador> ou d_<e-mail> (diretoria, que lança o próprio lanche).
+  let colaboradores = [];
+  let dataHoje = hoje();
+  const meses = {};            // 'AAAA-MM' -> { lista, pronto, erro, parar }
+
+  function idPessoaColab(id){ return 'c_'+id; }
+  function idPessoaDiretoria(email){ return 'd_'+email; }
+  function refPessoa(p){ return doc(db,'lanches',p); }
+  function refMes(p, mes){ return doc(db,'lanches',p,'anos',mes.slice(0,4),'meses',mes.slice(5,7)); }
+  function novoId(){ return 'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+  function horaAgora(){ const d = new Date(); return doisDig(d.getHours())+':'+doisDig(d.getMinutes()); }
+
+  function abrirMes(mes){
+    if(meses[mes]) return meses[mes];
+    const m = meses[mes] = { lista:[], pronto:false, erro:null, parar:null };
+    m.parar = onSnapshot(query(collectionGroup(db,'meses'), where('mes','==',mes)), function(s){
+      const lista = [];
+      s.docs.forEach(function(d){
+        const g = d.data();
+        const regs = g.registros || {};
+        Object.keys(regs).forEach(function(rid){
+          lista.push(Object.assign({}, regs[rid], { id:rid, pessoaId:g.pessoaId, nome:g.nome, tipo:g.tipo, mes:g.mes }));
+        });
+      });
+      m.lista = lista; m.pronto = true; m.erro = null;
+      aoMudarMes(mes);
+    }, function(e){
+      console.error(e);
+      m.erro = e; m.pronto = true;
+      aoMudarMes(mes);
+    });
+    return m;
+  }
+  function fecharMes(mes){
+    const m = meses[mes];
+    if(!m) return;
+    try{ m.parar(); }catch(e){}
+    delete meses[mes];
+  }
+  function fecharMesesSobrando(){
+    Object.keys(meses).forEach(function(mes){
+      if(mes !== dataHoje.slice(0,7) && !(viewAtual === 'relatorio' && mes === dataRelatorio.slice(0,7))) fecharMes(mes);
+    });
+  }
+  function fecharTodosMeses(){ Object.keys(meses).forEach(fecharMes); }
+  function lancamentosDoDia(dia){
+    const m = meses[dia.slice(0,7)];
+    return m ? m.lista.filter(function(e){ return e.dia === dia; }) : [];
+  }
+  function lanchesHoje(){ return lancamentosDoDia(dataHoje); }
+  function aoMudarMes(mes){
+    if(mes === dataHoje.slice(0,7)) atualizarListaNomesSeAberta();
+    if(viewAtual === 'relatorio' && areaLiberada && mes === dataRelatorio.slice(0,7)) desenharRelatorio();
+  }
+  // Mensagem quando o Firestore pede o índice do grupo "meses" (só acontece uma vez, na configuração).
+  function avisoErroMes(e){
+    const msg = String((e && e.message) || '');
+    const link = (msg.match(/https:\/\/console\.firebase\.google\.com\S+/) || [''])[0];
+    if((e && e.code) === 'failed-precondition' || link){
+      return '<div class="card"><p style="font-size:.86rem;line-height:1.6;margin:0 0 .6rem;color:var(--texto)">Falta criar um índice no Firestore para os lanches aparecerem.</p>'+
+        (link && usuarioAtual && usuarioAtual.admin ? '<a class="btn btn-azul btn-full" href="'+esc(link)+'" target="_blank" rel="noopener">Criar o índice no Firebase</a>' : '<p class="dica-campo" style="margin:0">Avise a administração.</p>')+
+        '</div>';
+    }
+    return '<div class="vazio">'+esc(mensagemErro(e))+'</div>';
+  }
+
+  function podeMexer(l){
+    return !!usuarioAtual && (usuarioAtual.admin || (l.registradoPor && l.registradoPor.email === emailAtual));
+  }
+  function iniciarInicio(){
+    vigias.push(onSnapshot(collection(db,'colaboradores'), function(s){
+      colaboradores = s.docs.map(function(d){ return Object.assign({ id:d.id }, d.data()); }).sort(porNome);
+      if(viewAtual === 'cadastros') desenharCadastros();
+      atualizarListaNomesSeAberta();
+    }, function(e){ console.error(e); }));
+    dataHoje = hoje();
+    document.getElementById('view-inicio').innerHTML =
+      '<h2 class="titulo-view">Lanches</h2>'+
+      '<p class="sub-view" id="inicio-data"></p>'+
+      '<div class="acoes-grandes">'+
+        '<button class="acao-grande principal" onclick="abrirLancheColaborador()">'+
+          '<span class="ic">'+icone('cafe')+'</span>'+
+          '<span><strong>Cadastrar lanche de colaborador</strong><small>Escolha o nome e marque o que foi servido</small></span>'+
+        '</button>'+
+        '<button class="acao-grande" onclick="abrirMeuLanche()">'+
+          '<span class="ic">'+icone('escrever')+'</span>'+
+          '<span><strong>Cadastrar meu lanche</strong><small>Diretoria: escreva o que consumiu</small></span>'+
+        '</button>'+
+      '</div>'+
+      '<p class="dica-campo" style="margin:0;text-align:center">Os lanches lançados ficam na aba Lançados, que pede a senha interna.</p>';
+    document.getElementById('inicio-data').textContent = 'Hoje, '+dataExtenso(dataHoje);
+  }
+  // Se o app ficou aberto de um dia para o outro, passa para o dia novo.
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible' && usuarioAtual && dataHoje !== hoje()){
+      dataHoje = hoje();
+      if(Object.keys(meses).length) abrirMes(dataHoje.slice(0,7));
+      fecharMesesSobrando();
+      const el = document.getElementById('inicio-data');
+      if(el) el.textContent = 'Hoje, '+dataExtenso(dataHoje);
+    }
+  });
+
+  function cartaoLanche(l){
+    const ehColab = l.tipo === 'colaborador';
+    const desc = ehColab ? descreverItens(l.itens) : (l.texto || '');
+    const quem = l.registradoPor ? (l.registradoPor.nome || l.registradoPor.email) : '';
+    const editado = l.atualizadoPor ? ('Editado por '+esc(l.atualizadoPor.nome || l.atualizadoPor.email)+(l.atualizadoHora?(' às '+esc(l.atualizadoHora)):'')) : '';
+    return '<div class="lanche">'+
+      '<div class="lanche-topo">'+
+        '<div class="lanche-nome">'+esc(l.nome)+'</div>'+
+        '<span class="tag '+(ehColab?'tag-colab':'tag-dir')+'">'+(ehColab?'Colaborador':'Diretoria')+'</span>'+
+      '</div>'+
+      '<div class="lanche-desc">'+esc(desc)+'</div>'+
+      '<div class="lanche-rodape">'+
+        '<span class="lanche-quem">Lançado por '+esc(quem)+' às '+esc(l.hora||hora(l.criadoEm))+(editado?('<br>'+editado):'')+'</span>'+
+        (podeMexer(l) ? ('<span class="lanche-acoes">'+
+          '<button class="icon-btn" data-id="'+esc(l.id)+'" onclick="editarLanche(this.dataset.id)" aria-label="Editar">'+icone('editar')+'</button>'+
+          '<button class="icon-btn perigo" data-id="'+esc(l.id)+'" onclick="excluirLanche(this.dataset.id)" aria-label="Excluir">'+icone('excluir')+'</button>'+
+        '</span>') : '')+
+      '</div>'+
+    '</div>';
+  }
+  function ordenarPorHorario(lista){
+    return lista.slice().sort(function(a,b){ return String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')); });
+  }
+  // ===== Formulário de lanche =====
+  // A data é sempre a do momento do lançamento; o horário e quem lançou ficam gravados.
+  let form = null;   // { tipo, id, original, colaboradorId, nome, itens, texto, busca }
+  function itensVazios(){ const o = {}; TODOS_ITENS.forEach(function(i){ o[i.k] = 0; }); return o; }
+  function colabsComLancheHoje(ignorarId){
+    const s = {};
+    lanchesHoje().forEach(function(l){ if(l.tipo==='colaborador' && l.id !== ignorarId) s[l.pessoaId] = true; });
+    return s;
+  }
+  window.abrirLancheColaborador = function(lanche){
+    form = lanche ? {
+      tipo:'colaborador', id:lanche.id, original:lanche, colaboradorId:String(lanche.pessoaId||'').replace(/^c_/,''), nome:lanche.nome||'',
+      itens:Object.assign(itensVazios(), lanche.itens||{}), busca:''
+    } : { tipo:'colaborador', id:null, original:null, colaboradorId:'', nome:'', itens:itensVazios(), busca:'' };
+    abrirModal(
+      topoModal(form.id ? 'Editar lanche de colaborador' : 'Lanche de colaborador')+
+      (form.id ? '<p class="dica-campo" style="margin:-.4rem 0 .9rem">Lançado em '+dataCurta(lanche.dia)+' às '+esc(lanche.hora||'')+' por '+esc((lanche.registradoPor||{}).nome||'')+'.</p>' : '')+
+      '<label>Colaborador</label>'+
+      '<div id="form-colab"></div>'+
+      '<div id="form-itens"></div>'
+    );
+    abrirMes(dataHoje.slice(0,7));   // só para marcar quem já lançou hoje
+    desenharEscolhaColab();
+    desenharItensForm();
+  };
+  window.abrirMeuLanche = function(lanche){
+    form = lanche ? { tipo:'diretoria', id:lanche.id, original:lanche, texto:lanche.texto||'', nome:lanche.nome||'' }
+                  : { tipo:'diretoria', id:null, original:null, texto:'', nome:'' };
+    abrirModal(
+      topoModal(form.id ? 'Editar lanche' : 'Meu lanche')+
+      (form.id ? '<p class="dica-campo" style="margin:-.4rem 0 .9rem">Lançado em '+dataCurta(lanche.dia)+' às '+esc(lanche.hora||'')+'.</p>' : '')+
+      '<label for="f-texto">O que você consumiu</label>'+
+      '<textarea id="f-texto" placeholder="Ex.: 1 café com leite e 1 pão na chapa">'+esc(form.texto)+'</textarea>'+
+      '<p class="dica-campo">Fica registrado no nome de '+esc(form.id ? form.nome : (usuarioAtual.nome||''))+', com o horário do lançamento.</p>'+
+      '<div class="erro" id="form-erro"></div>'+
+      '<button class="btn btn-azul btn-full" id="btn-salvar" onclick="salvarLanche()">'+(form.id?'Salvar alterações':'Salvar lanche')+'</button>'
+    );
+    if(!form.id) setTimeout(function(){ const t = document.getElementById('f-texto'); if(t) t.focus(); }, 250);
+  };
+  window.buscarNome = function(v){ if(!form) return; form.busca = v; desenharNomes(); };
+  function atualizarListaNomesSeAberta(){
+    if(form && form.tipo === 'colaborador' && document.getElementById('form-colab')) desenharEscolhaColab(true);
+  }
+  function desenharEscolhaColab(soLista){
+    const cont = document.getElementById('form-colab');
+    if(!cont || !form) return;
+    const lancados = colabsComLancheHoje(form.id);
+    if(form.nome){
+      cont.innerHTML =
+        '<div class="escolhido"><strong>'+esc(form.nome)+'</strong>'+
+        '<button class="btn btn-outline btn-sm" onclick="trocarColab()">Trocar</button></div>'+
+        (!form.id && lancados[idPessoaColab(form.colaboradorId)] ? '<div class="aviso-dup">Este colaborador já tem lanche lançado hoje.</div>' : '');
+      document.getElementById('form-itens').classList.remove('hidden');
+      return;
+    }
+    document.getElementById('form-itens').classList.add('hidden');
+    if(soLista && document.getElementById('f-busca')){ desenharNomes(); return; }
+    cont.innerHTML =
+      '<input id="f-busca" type="search" placeholder="Buscar nome" autocomplete="off" value="'+esc(form.busca)+'" oninput="buscarNome(this.value)">'+
+      '<div class="lista-nomes" id="lista-nomes"></div>';
+    desenharNomes();
+  }
+  window.desenharNomes = function(){
+    const el = document.getElementById('lista-nomes');
+    if(!el || !form) return;
+    const b = normalizar(form.busca);
+    const lancados = colabsComLancheHoje(form.id);
+    const lista = colaboradores.filter(function(c){ return !b || normalizar(c.nome).indexOf(b) >= 0; });
+    if(!colaboradores.length){
+      el.innerHTML = '<div class="vazio">Nenhum colaborador cadastrado.'+(usuarioAtual.admin?' Cadastre na aba Cadastros.':' Peça para a administração cadastrar.')+'</div>';
+      return;
+    }
+    el.innerHTML = lista.length ? lista.map(function(c){
+      return '<button class="item-nome" data-id="'+esc(c.id)+'" onclick="escolherColab(this.dataset.id)"><span>'+esc(c.nome)+'</span>'+
+        (lancados[idPessoaColab(c.id)] ? '<span class="ja-lancado">Já lançado hoje</span>' : '')+'</button>';
+    }).join('') : '<div class="vazio">Nenhum nome encontrado.</div>';
+  };
+  window.escolherColab = function(id){
+    const c = colaboradores.find(function(x){ return x.id === id; });
+    if(!c || !form) return;
+    form.colaboradorId = c.id; form.nome = c.nome; form.busca = '';
+    desenharEscolhaColab();
+    desenharItensForm();
+  };
+  window.trocarColab = function(){
+    form.colaboradorId = ''; form.nome = '';
+    desenharEscolhaColab();
+    setTimeout(function(){ const b = document.getElementById('f-busca'); if(b) b.focus(); }, 50);
+  };
+  function desenharItensForm(){
+    const cont = document.getElementById('form-itens');
+    if(!cont || !form) return;
+    const resumo = descreverItens(form.itens);
+    cont.innerHTML = GRUPOS.map(function(g){
+      return '<div class="grupo-tit">'+g.nome+(g.fatia?' (fatias)':'')+'</div>'+
+        g.itens.map(function(i){
+          const q = Number(form.itens[i.k]||0);
+          return '<div class="op-linha'+(q?' marcada':'')+'">'+
+            '<button type="button" class="op-toque" role="checkbox" aria-checked="'+(q?'true':'false')+'" onclick="marcarItem(\''+i.k+'\')">'+
+              '<span class="marcador">'+icone('check')+'</span><span>'+i.n+'</span></button>'+
+            (i.qtd && q ? ('<div class="seg'+(i.max>2?' quatro':'')+'" role="group" aria-label="Quantidade">'+
+              Array.from({length:i.max}, function(_,x){ return x+1; }).map(function(n){
+                return '<button type="button" class="'+(q===n?'ativa':'')+'" onclick="quantidadeItem(\''+i.k+'\','+n+')" aria-label="'+n+'">'+n+
+                  (g.fatia?'<span class="un">'+(n>1?'fatias':'fatia')+'</span>':'')+'</button>';
+              }).join('')+'</div>') : '')+
+          '</div>';
+        }).join('');
+    }).join('')+
+    '<div class="resumo-form">'+(resumo ? ('<strong>Resumo:</strong> '+esc(resumo)) : 'Marque o que foi servido.')+'</div>'+
+    '<div class="erro" id="form-erro"></div>'+
+    '<button class="btn btn-azul btn-full" id="btn-salvar" onclick="salvarLanche()">'+(form.id?'Salvar alterações':'Salvar lanche')+'</button>';
+  }
+  window.marcarItem = function(k){ form.itens[k] = form.itens[k] ? 0 : 1; desenharItensForm(); };
+  window.quantidadeItem = function(k, n){ form.itens[k] = n; desenharItensForm(); };
+
+  window.salvarLanche = async function(){
+    const erro = document.getElementById('form-erro');
+    const btn = document.getElementById('btn-salvar');
+    const quem = { email:emailAtual, nome:usuarioAtual.nome || emailAtual };
+    let pessoaId, nome, tipo, conteudo;
+    if(form.tipo === 'colaborador'){
+      if(!form.colaboradorId){ erro.textContent = 'Escolha o colaborador.'; return; }
+      const itens = {};
+      TODOS_ITENS.forEach(function(i){ itens[i.k] = Number(form.itens[i.k]||0); });
+      if(!TODOS_ITENS.some(function(i){ return itens[i.k] > 0; })){ erro.textContent = 'Marque pelo menos um item.'; return; }
+      if(!form.id && colabsComLancheHoje()[idPessoaColab(form.colaboradorId)] && !confirm(form.nome+' já tem lanche lançado hoje. Lançar outro mesmo assim?')) return;
+      pessoaId = idPessoaColab(form.colaboradorId); nome = form.nome; tipo = 'colaborador';
+      conteudo = { itens:itens, texto:'' };
+    }else{
+      const texto = document.getElementById('f-texto').value.trim();
+      if(!texto){ erro.textContent = 'Escreva o que você consumiu.'; return; }
+      tipo = 'diretoria';
+      pessoaId = form.id ? form.original.pessoaId : idPessoaDiretoria(emailAtual);
+      nome = form.id ? form.original.nome : (usuarioAtual.nome || emailAtual);
+      conteudo = { itens:{}, texto:texto };
+    }
+    btn.disabled = true;
+    try{
+      const lote = writeBatch(db);
+      if(!form.id){
+        const agora = new Date();
+        const dia = dataISO(agora), mes = dia.slice(0,7);
+        const reg = Object.assign({ dia:dia, hora:horaAgora(), criadoEm:agora.toISOString(), registradoPor:quem }, conteudo);
+        lote.set(refPessoa(pessoaId), { pessoaId:pessoaId, nome:nome, tipo:tipo, meses:arrayUnion(mes) }, { merge:true });
+        lote.set(refMes(pessoaId, mes), { pessoaId:pessoaId, nome:nome, tipo:tipo, mes:mes, ano:mes.slice(0,4), registros:{ [novoId()]:reg } }, { merge:true });
+        await lote.commit();
+        avisar('Lanche salvo.');
+      }else{
+        const o = form.original;
+        const edicao = { atualizadoEm:new Date().toISOString(), atualizadoHora:horaAgora(), atualizadoPor:quem };
+        if(pessoaId === o.pessoaId){
+          const campos = {};
+          Object.keys(conteudo).forEach(function(k){ campos['registros.'+o.id+'.'+k] = conteudo[k]; });
+          Object.keys(edicao).forEach(function(k){ campos['registros.'+o.id+'.'+k] = edicao[k]; });
+          lote.update(refMes(o.pessoaId, o.mes), campos);
+        }else{
+          // Trocou o colaborador: o lanche sai do grupo da pessoa antiga e vai para o da nova, no mesmo mês.
+          const reg = Object.assign({ dia:o.dia, hora:o.hora, criadoEm:o.criadoEm, registradoPor:o.registradoPor }, conteudo, edicao);
+          lote.update(refMes(o.pessoaId, o.mes), { ['registros.'+o.id]:deleteField() });
+          lote.set(refPessoa(pessoaId), { pessoaId:pessoaId, nome:nome, tipo:tipo, meses:arrayUnion(o.mes) }, { merge:true });
+          lote.set(refMes(pessoaId, o.mes), { pessoaId:pessoaId, nome:nome, tipo:tipo, mes:o.mes, ano:o.mes.slice(0,4), registros:{ [o.id]:reg } }, { merge:true });
+        }
+        await lote.commit();
+        avisar('Lanche atualizado.');
+      }
+      fecharModal();
+    }catch(e){
+      console.error(e);
+      erro.textContent = mensagemErro(e);
+      btn.disabled = false;
+    }
+  };
+  function acharLanche(id){
+    let achado = null;
+    Object.keys(meses).forEach(function(mes){ meses[mes].lista.forEach(function(l){ if(l.id === id) achado = l; }); });
+    return achado;
+  }
+  window.editarLanche = function(id){
+    const l = acharLanche(id);
+    if(!l) return;
+    if(l.tipo === 'colaborador') abrirLancheColaborador(l); else abrirMeuLanche(l);
+  };
+  window.excluirLanche = async function(id){
+    const l = acharLanche(id);
+    if(!l) return;
+    if(!confirm('Excluir o lanche de '+l.nome+' lançado às '+(l.hora||'')+'?')) return;
+    try{
+      const restantes = (meses[l.mes] ? meses[l.mes].lista : []).filter(function(x){ return x.pessoaId === l.pessoaId && x.id !== id; });
+      const lote = writeBatch(db);
+      if(restantes.length){
+        lote.update(refMes(l.pessoaId, l.mes), { ['registros.'+id]:deleteField() });
+      }else{
+        // Era o único lanche da pessoa no mês: apaga o documento do mês inteiro.
+        lote.delete(refMes(l.pessoaId, l.mes));
+        lote.set(refPessoa(l.pessoaId), { meses:arrayRemove(l.mes) }, { merge:true });
+      }
+      await lote.commit();
+      avisar('Lanche excluído.');
+    }catch(e){ console.error(e); avisar(mensagemErro(e), true); }
+  };
+  const fecharOriginal = window.fecharModal;
+  window.fecharModal = function(){
+    form = null; fecharOriginal();
+    if(atualizacaoPendente){ atualizacaoPendente = false; setTimeout(function(){ location.reload(); }, 300); }
+  };
+
+  // ===== Relatório por dia de lançamento =====
+  let dataRelatorio = hoje();
+  function pararRelatorio(){ fecharMesesSobrando(); }
+  function iniciarRelatorio(){
+    if(!areaLiberada && areaLembrada()) areaLiberada = true;
+    if(!areaLiberada){
+      document.getElementById('view-relatorio').innerHTML =
+        '<h2 class="titulo-view">Lançados</h2>'+
+        '<p class="sub-view">Área protegida. Digite a senha interna para ver os lanches lançados.</p>'+
+        '<div class="card">'+
+          '<label for="f-senha-interna">Senha interna</label>'+
+          '<input type="password" id="f-senha-interna" autocomplete="current-password" onkeydown="if(event.key===\'Enter\') conferirSenha()">'+
+          '<div class="erro" id="senha-erro"></div>'+
+          '<button class="btn btn-azul btn-full" onclick="conferirSenha()">Entrar</button>'+
+        '</div>';
+      return;
+    }
+    document.getElementById('view-relatorio').innerHTML =
+      '<div class="secao-tit" style="align-items:center"><h2 class="titulo-view">Lançados</h2>'+
+        '<button class="btn btn-outline btn-sm" onclick="bloquearArea()">Bloquear</button></div>'+
+      '<p class="sub-view" id="rel-extenso"></p>'+
+      '<div class="seletor-data">'+
+        '<button class="btn btn-outline" onclick="mudarDiaRelatorio(-1)" aria-label="Dia anterior">'+icone('esquerda')+'</button>'+
+        '<input type="date" id="rel-data" value="'+dataRelatorio+'" onchange="escolherDiaRelatorio(this.value)">'+
+        '<button class="btn btn-outline" onclick="mudarDiaRelatorio(1)" aria-label="Próximo dia">'+icone('direita')+'</button>'+
+      '</div>'+
+      '<div id="rel-corpo"><div class="vazio">Carregando...</div></div>';
+    carregarRelatorio();
+  }
+  window.escolherDiaRelatorio = function(v){ if(!v) return; dataRelatorio = v; carregarRelatorio(); };
+  window.mudarDiaRelatorio = function(n){
+    dataRelatorio = somarDias(dataRelatorio, n);
+    document.getElementById('rel-data').value = dataRelatorio;
+    carregarRelatorio();
+  };
+  // Dias do mesmo mês não geram leitura nova: o mês já está carregado.
+  function carregarRelatorio(){
+    document.getElementById('rel-extenso').textContent = dataExtenso(dataRelatorio);
+    abrirMes(dataRelatorio.slice(0,7));
+    fecharMesesSobrando();
+    desenharRelatorio();
+  }
+  function totaisDoDia(lista){
+    const t = itensVazios();
+    lista.forEach(function(l){ if(l.tipo==='colaborador') TODOS_ITENS.forEach(function(i){ t[i.k] += Number((l.itens||{})[i.k]||0); }); });
+    return t;
+  }
+  function linhasTotais(t){
+    let html = '';
+    GRUPOS.forEach(function(g){
+      const usados = g.itens.filter(function(i){ return t[i.k] > 0; });
+      if(!usados.length) return;
+      html += '<tr class="grupo"><td colspan="2">'+g.nome+'</td></tr>';
+      usados.forEach(function(i){
+        html += '<tr><td>'+i.n+'</td><td>'+t[i.k]+(g.fatia?(t[i.k]>1?' fatias':' fatia'):(i.qtd?'':(t[i.k]>1?' vezes':' vez')))+'</td></tr>';
+      });
+    });
+    return html;
+  }
+  function separarDoDia(){
+    const lista = lancamentosDoDia(dataRelatorio);
+    const porNomeHora = function(a,b){ return porNome(a,b) || String(a.criadoEm||'').localeCompare(String(b.criadoEm||'')); };
+    return {
+      todos: lista,
+      colab: lista.filter(function(l){ return l.tipo==='colaborador'; }).sort(porNomeHora),
+      dir: lista.filter(function(l){ return l.tipo!=='colaborador'; }).sort(porNomeHora)
+    };
+  }
+  function desenharRelatorio(){
+    const cont = document.getElementById('rel-corpo');
+    if(!cont || viewAtual !== 'relatorio' || !areaLiberada) return;
+    const m = meses[dataRelatorio.slice(0,7)];
+    if(m && m.erro){ cont.innerHTML = avisoErroMes(m.erro); return; }
+    if(!m || !m.pronto){ cont.innerHTML = '<div class="vazio">Carregando...</div>'; return; }
+    const d = separarDoDia();
+    if(!d.todos.length){
+      cont.innerHTML = '<div class="card"><div class="vazio">Nenhum lanche lançado neste dia.</div></div>';
+      return;
+    }
+    const linhas = linhasTotais(totaisDoDia(d.todos));
+    cont.innerHTML =
+      '<div class="resumo-cards">'+
+        '<div class="resumo-card"><div class="num">'+d.todos.length+'</div><div class="lbl">Total</div></div>'+
+        '<div class="resumo-card"><div class="num">'+d.colab.length+'</div><div class="lbl">Colaboradores</div></div>'+
+        '<div class="resumo-card"><div class="num">'+d.dir.length+'</div><div class="lbl">Diretoria</div></div>'+
+      '</div>'+
+      (linhas ? ('<div class="card"><label style="margin-bottom:.2rem">Itens servidos aos colaboradores</label><table class="tabela-itens">'+linhas+'</table></div>') : '')+
+      (d.colab.length ? ('<div class="secao-tit" style="margin-top:.4rem"><h3>Colaboradores</h3><span>'+d.colab.length+'</span></div>'+d.colab.map(cartaoLanche).join('')) : '')+
+      (d.dir.length ? ('<div class="secao-tit" style="margin-top:1rem"><h3>Diretoria</h3><span>'+d.dir.length+'</span></div>'+d.dir.map(cartaoLanche).join('')) : '')+
+      '<button class="btn btn-outline btn-full" style="margin-top:.8rem" onclick="imprimirRelatorio()">'+icone('imprimir')+' Imprimir ou salvar em PDF</button>';
+  }
+  window.imprimirRelatorio = function(){
+    const d = separarDoDia();
+    const linhas = linhasTotais(totaisDoDia(d.todos)).replace(/<tr class="grupo"><td colspan="2">([^<]*)<\/td><\/tr>/g, '<tr><th colspan="2">$1</th></tr>');
+    const linha = function(l, desc){
+      return '<tr><td>'+esc(l.nome)+'</td><td style="white-space:pre-wrap">'+esc(desc)+'</td><td>'+esc((l.registradoPor||{}).nome||'')+'</td><td>'+esc(l.hora||'')+'</td></tr>';
+    };
+    const cab = function(t){ return '<tr><th>'+t+'</th><th>Lanche</th><th>Lançado por</th><th>Horário</th></tr>'; };
+    document.getElementById('area-impressao').innerHTML =
+      '<h2>Relatório de lanches</h2>'+
+      '<div>Pão &amp; Tradição · '+esc(dataExtenso(dataRelatorio))+'</div>'+
+      '<div style="margin-top:4px">Total: '+d.todos.length+' · Colaboradores: '+d.colab.length+' · Diretoria: '+d.dir.length+'</div>'+
+      (linhas ? '<table><tr><th>Item</th><th>Quantidade</th></tr>'+linhas+'</table>' : '')+
+      (d.colab.length ? ('<table>'+cab('Colaborador')+d.colab.map(function(l){ return linha(l, descreverItens(l.itens)); }).join('')+'</table>') : '')+
+      (d.dir.length ? ('<table>'+cab('Diretoria')+d.dir.map(function(l){ return linha(l, l.texto); }).join('')+'</table>') : '');
+    setTimeout(function(){ window.print(); }, 50);
+  };
+
+  // ===== Cadastros (somente administração) =====
+  let abaCadastro = 'colaboradores';
+  let usuarios = [];
+  let opinioes = [];
+  let vigiasCad = [];
+  let buscaColab = '';
+  function pararCadastros(){ vigiasCad.forEach(function(f){ try{ f(); }catch(e){} }); vigiasCad = []; }
+  function iniciarCadastros(){
+    pararCadastros();
+    vigiasCad.push(onSnapshot(collection(db,'usuarios'), function(s){
+      usuarios = s.docs.map(function(d){ return Object.assign({ id:d.id }, d.data()); }).sort(porNome);
+      if(abaCadastro === 'usuarios') desenharCadastros();
+    }, function(e){ console.error(e); }));
+    vigiasCad.push(onSnapshot(collection(db,'opinioes'), function(s){
+      opinioes = s.docs.map(function(d){ return Object.assign({ id:d.id }, d.data()); })
+        .sort(function(a,b){ return String(b.enviadoEm||'').localeCompare(String(a.enviadoEm||'')); });
+      if(abaCadastro === 'opinioes') desenharCadastros();
+    }, function(e){ console.error(e); }));
+    desenharCadastros();
+  }
+  window.mudarAbaCadastro = function(a){ abaCadastro = a; desenharCadastros(); };
+  function desenharCadastros(){
+    const cont = document.getElementById('view-cadastros');
+    if(!cont || viewAtual !== 'cadastros') return;
+    const abas = [['colaboradores','Colaboradores'],['usuarios','Usuários'],['opinioes','Opiniões']];
+    let corpo = '';
+    if(abaCadastro === 'colaboradores'){
+      const b = normalizar(buscaColab);
+      const lista = colaboradores.filter(function(c){ return !b || normalizar(c.nome).indexOf(b) >= 0; });
+      corpo =
+        '<div class="card">'+
+          '<label for="f-novo-colab">Novo colaborador</label>'+
+          '<div class="linha-add"><input id="f-novo-colab" placeholder="Nome completo" autocomplete="off" onkeydown="if(event.key===\'Enter\') adicionarColaborador()">'+
+          '<button class="btn btn-azul" onclick="adicionarColaborador()" aria-label="Adicionar">'+icone('mais')+'</button></div>'+
+          '<button class="btn btn-outline btn-full btn-sm" style="margin-top:.8rem" onclick="abrirVariosColaboradores()">Adicionar vários de uma vez</button>'+
+        '</div>'+
+        '<div class="card">'+
+          '<div class="secao-tit"><h3>Cadastrados</h3><span>'+colaboradores.length+'</span></div>'+
+          (colaboradores.length > 6 ? '<input id="f-busca-cad" type="search" placeholder="Buscar nome" value="'+esc(buscaColab)+'" oninput="buscarColabCad(this.value)">' : '')+
+          '<div id="lista-colab-cad"></div>'+
+        '</div>';
+      cont.innerHTML = cabecalhoCadastros(abas) + corpo;
+      desenharListaColabCad();
+      return;
+    }
+    if(abaCadastro === 'usuarios'){
+      corpo =
+        '<div class="card">'+
+          '<label for="f-novo-nome">Nome</label>'+
+          '<input id="f-novo-nome" placeholder="Nome da pessoa" autocomplete="off">'+
+          '<label for="f-novo-email">E-mail da conta Google</label>'+
+          '<input id="f-novo-email" type="email" inputmode="email" autocapitalize="none" autocomplete="off" placeholder="nome@gmail.com">'+
+          '<label class="check-linha"><input type="checkbox" id="f-novo-admin"> Administrador (pode cadastrar e remover)</label>'+
+          '<div class="erro" id="usuario-erro"></div>'+
+          '<button class="btn btn-azul btn-full" onclick="adicionarUsuario()">Liberar acesso</button>'+
+        '</div>'+
+        '<div class="card">'+
+          '<div class="secao-tit"><h3>Com acesso</h3><span>'+usuarios.length+'</span></div>'+
+          (usuarios.length ? usuarios.map(function(u){
+            const eu = u.id === emailAtual;
+            return '<div class="item-cad"><div class="info"><strong>'+esc(u.nome||u.id)+(eu?' (você)':'')+'</strong><small>'+esc(u.id)+'</small>'+
+              (u.admin?'<span class="tag tag-admin" style="margin-top:4px">Administrador</span>':'')+'</div>'+
+              (eu ? '' : ('<div class="acoes">'+
+                '<button class="btn btn-outline btn-sm" data-id="'+esc(u.id)+'" onclick="alternarAdmin(this.dataset.id)">'+(u.admin?'Tirar admin':'Tornar admin')+'</button>'+
+                '<button class="icon-btn perigo" data-id="'+esc(u.id)+'" onclick="removerUsuario(this.dataset.id)" aria-label="Remover acesso">'+icone('excluir')+'</button>'+
+              '</div>'))+
+            '</div>';
+          }).join('') : '<div class="vazio">Carregando...</div>')+
+        '</div>';
+    }else{
+      corpo = '<div class="card">'+
+        '<div class="secao-tit"><h3>Opiniões sobre o app</h3><span>'+opinioes.length+'</span></div>'+
+        (opinioes.length ? opinioes.map(function(o){
+          const est = o.estrelas ? ('<span style="color:var(--ouro);font-weight:800">'+o.estrelas+' de 5</span> · ') : '';
+          return '<div class="item-cad" style="display:block"><div class="info"><strong>'+esc(o.nome||'')+'</strong>'+
+            '<small>'+est+(o.enviadoEm?dataCurta(o.enviadoEm.slice(0,10)):'')+'</small></div>'+
+            (o.sugestao?'<div class="lanche-desc">'+esc(o.sugestao)+'</div>':'')+'</div>';
+        }).join('') : '<div class="vazio">Nenhuma opinião enviada ainda.</div>')+
+      '</div>';
+    }
+    cont.innerHTML = cabecalhoCadastros(abas) + corpo;
+  }
+  function cabecalhoCadastros(abas){
+    return '<h2 class="titulo-view">Cadastros</h2>'+
+      '<p class="sub-view">Colaboradores que recebem lanche e pessoas que usam o app.</p>'+
+      '<div class="abas">'+abas.map(function(a){
+        return '<button class="aba'+(abaCadastro===a[0]?' ativa':'')+'" onclick="mudarAbaCadastro(\''+a[0]+'\')">'+a[1]+'</button>';
+      }).join('')+'</div>';
+  }
+  window.buscarColabCad = function(v){ buscaColab = v; desenharListaColabCad(); };
+  window.desenharListaColabCad = function(){
+    const el = document.getElementById('lista-colab-cad');
+    if(!el) return;
+    const b = normalizar(buscaColab);
+    const lista = colaboradores.filter(function(c){ return !b || normalizar(c.nome).indexOf(b) >= 0; });
+    el.innerHTML = !colaboradores.length ? '<div class="vazio">Nenhum colaborador cadastrado ainda.</div>'
+      : !lista.length ? '<div class="vazio">Nenhum nome encontrado.</div>'
+      : lista.map(function(c){
+        return '<div class="item-cad"><div class="info"><strong>'+esc(c.nome)+'</strong></div><div class="acoes">'+
+          '<button class="icon-btn" data-id="'+esc(c.id)+'" onclick="renomearColaborador(this.dataset.id)" aria-label="Corrigir nome">'+icone('editar')+'</button>'+
+          '<button class="icon-btn perigo" data-id="'+esc(c.id)+'" onclick="removerColaborador(this.dataset.id)" aria-label="Remover">'+icone('excluir')+'</button>'+
+        '</div></div>';
+      }).join('');
+  };
+  function nomeJaExiste(nome, ignorarId){
+    const n = normalizar(nome).trim();
+    return colaboradores.some(function(c){ return c.id !== ignorarId && normalizar(c.nome).trim() === n; });
+  }
+  window.adicionarColaborador = async function(){
+    const input = document.getElementById('f-novo-colab');
+    const nome = input.value.trim().replace(/\s+/g,' ');
+    if(!nome){ input.focus(); return; }
+    if(nomeJaExiste(nome)){ avisar('Esse nome já está cadastrado.', true); return; }
+    try{
+      await addDoc(collection(db,'colaboradores'), { nome:nome, criadoEm:new Date().toISOString() });
+      input.value = '';
+      input.focus();
+      avisar('Colaborador cadastrado.');
+    }catch(e){ console.error(e); avisar(mensagemErro(e), true); }
+  };
+  window.abrirVariosColaboradores = function(){
+    abrirModal(topoModal('Adicionar vários')+
+      '<label for="f-varios">Um nome por linha</label>'+
+      '<textarea id="f-varios" rows="10" placeholder="Maria da Silva&#10;João Souza&#10;Ana Paula"></textarea>'+
+      '<p class="dica-campo">Nomes que já estão cadastrados são ignorados.</p>'+
+      '<div class="erro" id="varios-erro"></div>'+
+      '<button class="btn btn-azul btn-full" id="btn-varios" onclick="salvarVariosColaboradores()">Adicionar</button>');
+  };
+  window.salvarVariosColaboradores = async function(){
+    const erro = document.getElementById('varios-erro');
+    const vistos = {};
+    const nomes = document.getElementById('f-varios').value.split(/\r?\n/)
+      .map(function(n){ return n.trim().replace(/\s+/g,' '); })
+      .filter(function(n){ const k = normalizar(n); if(!n || vistos[k] || nomeJaExiste(n)) return false; vistos[k] = true; return true; });
+    if(!nomes.length){ erro.textContent = 'Nenhum nome novo para adicionar.'; return; }
+    document.getElementById('btn-varios').disabled = true;
+    try{
+      const agora = new Date().toISOString();
+      for(let i = 0; i < nomes.length; i += 400){
+        const lote = writeBatch(db);
+        nomes.slice(i, i+400).forEach(function(n){ lote.set(doc(collection(db,'colaboradores')), { nome:n, criadoEm:agora }); });
+        await lote.commit();
+      }
+      fecharModal();
+      avisar(nomes.length+(nomes.length>1?' colaboradores cadastrados.':' colaborador cadastrado.'));
+    }catch(e){
+      console.error(e);
+      erro.textContent = mensagemErro(e);
+      document.getElementById('btn-varios').disabled = false;
+    }
+  };
+  window.renomearColaborador = function(id){
+    const c = colaboradores.find(function(x){ return x.id === id; });
+    if(!c) return;
+    abrirModal(topoModal('Corrigir nome')+
+      '<label for="f-renomear">Nome</label>'+
+      '<input id="f-renomear" value="'+esc(c.nome)+'">'+
+      '<p class="dica-campo">O nome também é corrigido nos lanches já lançados.</p>'+
+      '<div class="erro" id="renomear-erro"></div>'+
+      '<button class="btn btn-azul btn-full" data-id="'+esc(id)+'" onclick="salvarNomeColaborador(this.dataset.id)">Salvar</button>');
+  };
+  window.salvarNomeColaborador = async function(id){
+    const nome = document.getElementById('f-renomear').value.trim().replace(/\s+/g,' ');
+    const erro = document.getElementById('renomear-erro');
+    if(!nome){ erro.textContent = 'Escreva o nome.'; return; }
+    if(nomeJaExiste(nome, id)){ erro.textContent = 'Esse nome já está cadastrado.'; return; }
+    try{
+      // O nome também é corrigido no grupo de lanches da pessoa (a pessoa e cada mês dela).
+      const p = idPessoaColab(id);
+      const grupo = await getDoc(refPessoa(p));
+      const lote = writeBatch(db);
+      lote.update(doc(db,'colaboradores',id), { nome:nome });
+      if(grupo.exists()){
+        lote.update(refPessoa(p), { nome:nome });
+        (grupo.data().meses || []).forEach(function(mes){ lote.set(refMes(p, mes), { nome:nome }, { merge:true }); });
+      }
+      await lote.commit();
+      fecharModal(); avisar('Nome corrigido.');
+    }catch(e){ console.error(e); erro.textContent = mensagemErro(e); }
+  };
+  window.removerColaborador = async function(id){
+    const c = colaboradores.find(function(x){ return x.id === id; });
+    if(!c || !confirm('Excluir '+c.nome+'? Todos os lanches dessa pessoa também serão apagados do Firebase e saem dos relatórios. Não dá para desfazer.')) return;
+    try{
+      const p = idPessoaColab(id);
+      const grupo = await getDoc(refPessoa(p));
+      const apagar = [];
+      if(grupo.exists()){
+        (grupo.data().meses || []).forEach(function(mes){ apagar.push(refMes(p, mes)); });
+        apagar.push(refPessoa(p));
+      }
+      apagar.push(doc(db,'colaboradores',id));
+      for(let i = 0; i < apagar.length; i += 400){
+        const lote = writeBatch(db);
+        apagar.slice(i, i+400).forEach(function(r){ lote.delete(r); });
+        await lote.commit();
+      }
+      avisar('Colaborador e lanches excluídos.');
+    }catch(e){ console.error(e); avisar(mensagemErro(e), true); }
+  };
+  window.adicionarUsuario = async function(){
+    const nome = document.getElementById('f-novo-nome').value.trim();
+    const email = document.getElementById('f-novo-email').value.trim().toLowerCase();
+    const admin = document.getElementById('f-novo-admin').checked;
+    const erro = document.getElementById('usuario-erro');
+    erro.textContent = '';
+    if(!nome){ erro.textContent = 'Escreva o nome.'; return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ erro.textContent = 'E-mail inválido.'; return; }
+    if(usuarios.some(function(u){ return u.id === email; })){ erro.textContent = 'Esse e-mail já tem acesso.'; return; }
+    try{
+      await setDoc(doc(db,'usuarios',email), { email:email, nome:nome, admin:admin, foto:'', telefone:'', criadoEm:new Date().toISOString() });
+      avisar('Acesso liberado para '+primeiroNome(nome)+'.');
+      document.getElementById('f-novo-nome').value = '';
+      document.getElementById('f-novo-email').value = '';
+      document.getElementById('f-novo-admin').checked = false;
+    }catch(e){ console.error(e); erro.textContent = mensagemErro(e); }
+  };
+  window.alternarAdmin = async function(id){
+    const u = usuarios.find(function(x){ return x.id === id; });
+    if(!u || id === emailAtual) return;
+    const pergunta = u.admin ? ('Tirar a administração de '+(u.nome||id)+'?') : ('Tornar '+(u.nome||id)+' administrador? Poderá cadastrar e remover pessoas.');
+    if(!confirm(pergunta)) return;
+    try{ await updateDoc(doc(db,'usuarios',id), { admin:!u.admin }); avisar('Alterado.'); }
+    catch(e){ console.error(e); avisar(mensagemErro(e), true); }
+  };
+  window.removerUsuario = async function(id){
+    const u = usuarios.find(function(x){ return x.id === id; });
+    if(!u || id === emailAtual) return;
+    if(!confirm('Remover o acesso de '+(u.nome||id)+'? Os lanches que essa pessoa lançou continuam no relatório.')) return;
+    try{ await deleteDoc(doc(db,'usuarios',id)); avisar('Acesso removido.'); }
+    catch(e){ console.error(e); avisar(mensagemErro(e), true); }
+  };
+
+  // ===== Perfil =====
+  function fotoPerfil(){ return (usuarioAtual && usuarioAtual.foto) || fotoGoogle || ''; }
+  function renderPerfil(){
+    const cont = document.getElementById('view-perfil');
+    if(!cont || !usuarioAtual) return;
+    const nome = usuarioAtual.nome || '';
+    const iniciais = nome.split(' ').filter(Boolean).slice(0,2).map(function(p){ return p[0]; }).join('').toUpperCase();
+    const foto = fotoPerfil();
+    const abertoTema = (document.getElementById('card-tema') || {}).dataset;
+    cont.innerHTML =
+      '<div class="perfil-cabecalho">'+
+        '<div class="perfil-foto-caixa">'+
+          '<div class="perfil-foto">'+(foto?('<img src="'+esc(foto)+'" alt="" referrerpolicy="no-referrer">'):esc(iniciais))+'</div>'+
+          '<button class="perfil-foto-botao" onclick="abrirOpcoesFoto()" aria-label="Foto do perfil">'+icone('camera')+'</button>'+
+          '<input type="file" id="f-perfil-foto" accept="image/*" class="hidden" onchange="trocarFotoPerfil(this)">'+
+        '</div>'+
+        '<div class="erro" id="foto-status" style="margin-bottom:.3rem"></div>'+
+        '<h1>'+esc(nome)+'</h1>'+
+        '<div class="perfil-email">'+esc(emailAtual)+'</div>'+
+        (usuarioAtual.admin?'<span class="tag tag-admin">Administrador</span>':'')+
+      '</div>'+
+      '<div class="card" id="card-tema"></div>'+
+      '<div class="card" id="card-avaliacao"></div>'+
+      '<button type="button" class="btn btn-outline btn-full btn-instalar'+(jaEstaInstalado()?' hidden':'')+'" style="margin-bottom:.7rem" onclick="instalarApp()">Instalar aplicativo no celular</button>'+
+      '<button class="btn btn-perigo btn-full" onclick="sair()">'+icone('sair')+' Sair</button>'+
+      '<div class="rodape">Pão &amp; Tradição · Padaria &amp; Confeitaria</div>';
+    if(abertoTema && abertoTema.aberto) document.getElementById('card-tema').dataset.aberto = abertoTema.aberto;
+    desenharCartaoTema();
+    desenharCartaoAvaliacao();
+  }
+
+  // Foto: reduzida e recortada em quadrado no próprio celular antes de salvar (fica com poucos KB).
+  const FOTO_LADO = 240;
+  function reduzirImagem(arquivo){
+    return new Promise(function(resolve, reject){
+      const leitor = new FileReader();
+      leitor.onload = function(){
+        const img = new Image();
+        img.onload = function(){
+          const lado = Math.min(img.width, img.height);
+          const canvas = document.createElement('canvas');
+          canvas.width = FOTO_LADO; canvas.height = FOTO_LADO;
+          canvas.getContext('2d').drawImage(img, (img.width-lado)/2, (img.height-lado)/2, lado, lado, 0, 0, FOTO_LADO, FOTO_LADO);
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.onerror = function(){ reject(new Error('imagem inválida')); };
+        img.src = leitor.result;
+      };
+      leitor.onerror = function(){ reject(new Error('falha ao ler')); };
+      leitor.readAsDataURL(arquivo);
+    });
+  }
+  window.abrirOpcoesFoto = function(){
+    if(!usuarioAtual.foto){ document.getElementById('f-perfil-foto').click(); return; }
+    abrirModal(topoModal('Foto do perfil')+
+      '<button class="btn btn-azul btn-full" onclick="fecharModal(); document.getElementById(\'f-perfil-foto\').click();">Trocar foto</button>'+
+      '<button class="btn btn-outline btn-full" style="margin-top:.7rem" onclick="fecharModal(); removerFotoPerfil();">Remover foto</button>');
+  };
+  window.trocarFotoPerfil = async function(input){
+    const arquivo = (input.files || [])[0];
+    const status = document.getElementById('foto-status');
+    if(!arquivo) return;
+    status.style.color = 'var(--texto-2)';
+    status.textContent = 'Preparando a foto...';
+    try{
+      const foto = await reduzirImagem(arquivo);
+      await updateDoc(doc(db,'usuarios',emailAtual), { foto:foto });
+      status.textContent = '';
+    }catch(e){
+      console.error(e);
+      status.style.color = 'var(--vermelho)';
+      status.textContent = 'Não foi possível salvar a foto. Tente outra imagem.';
+    }
+    input.value = '';
+  };
+  window.removerFotoPerfil = async function(){
+    if(!confirm('Remover sua foto de perfil?')) return;
+    try{ await updateDoc(doc(db,'usuarios',emailAtual), { foto:'' }); }
+    catch(e){ avisar(mensagemErro(e), true); }
+  };
+
+  window.alternarAcessibilidade = function(){
+    const c = document.getElementById('card-tema');
+    c.dataset.aberto = c.dataset.aberto === 'sim' ? 'nao' : 'sim';
+    desenharCartaoTema();
+  };
+  function chave(ligada, acao){
+    return '<button type="button" class="chave'+(ligada?' ligada':'')+'" role="switch" aria-checked="'+(ligada?'true':'false')+'" onclick="'+acao+'()"><span class="bolinha"></span></button>';
+  }
+  function desenharCartaoTema(){
+    const cont = document.getElementById('card-tema');
+    if(!cont) return;
+    const tamanho = preferencia('texto','normal');
+    const aberto = cont.dataset.aberto === 'sim';
+    cont.innerHTML =
+      '<div class="cartao-topo" onclick="alternarAcessibilidade()">'+
+        '<div><label style="margin:0">Acessibilidade</label>'+
+        '<p style="font-size:.8rem;color:var(--texto-2);line-height:1.5;margin:.2rem 0 0">Ajuste configurações do app para navegar de maneira mais confortável.</p></div>'+
+        '<span class="cartao-seta'+(aberto?' aberta':'')+'">'+icone('seta')+'</span>'+
+      '</div>'+
+      (aberto ? (
+      '<div class="linha-chave" style="margin-top:1.1rem"><div><strong class="rotulo-op">Modo escuro</strong>'+
+        '<p class="ajuda-op">Cores escuras, mais confortável à noite.</p></div>'+chave(temaEscuroLigado(),'alternarTema')+'</div>'+
+      '<div style="margin-top:1.1rem"><strong class="rotulo-op">Tamanho do texto</strong>'+
+        '<p class="ajuda-op">Deixa as letras e os botões maiores.</p>'+
+        '<div class="opcoes-texto">'+
+          [['normal','Normal'],['grande','Grande'],['maior','Muito grande']].map(function(o,i){
+            return '<button type="button" class="op-texto'+(tamanho===o[0]?' ativa':'')+'" onclick="definirTamanhoTexto(\''+o[0]+'\')">'+
+              '<span style="font-size:'+(0.9+i*0.35)+'rem;font-weight:800">A</span><span class="op-nome">'+o[1]+'</span></button>';
+          }).join('')+
+        '</div></div>'+
+      '<div class="linha-chave" style="margin-top:1.1rem"><div><strong class="rotulo-op">Alto contraste</strong>'+
+        '<p class="ajuda-op">Letras mais escuras e bordas mais marcadas, para enxergar melhor.</p></div>'+chave(preferencia('contraste','nao')==='sim','alternarContraste')+'</div>'+
+      '<div class="linha-chave" style="margin-top:1.1rem"><div><strong class="rotulo-op">Leitura em voz alta</strong>'+
+        '<p class="ajuda-op">Coloca um botão na tela que lê o conteúdo em voz alta.</p></div>'+chave(preferencia('voz','nao')==='sim','alternarVoz')+'</div>'
+      ) : '');
+  }
+  window.desenharCartaoTema = desenharCartaoTema;
+
+  let estrelasEscolhidas = 0;
+  const LEGENDAS_NOTA = ['','Muito ruim','Ruim','Regular','Bom','Ótimo'];
+  function desenharCartaoAvaliacao(){
+    const cont = document.getElementById('card-avaliacao');
+    if(!cont) return;
+    estrelasEscolhidas = 0;
+    cont.innerHTML =
+      '<label>Queremos te ouvir</label>'+
+      '<p style="font-size:.83rem;color:var(--texto-2);line-height:1.6;margin:0 0 .8rem">Conte o que achou do app e o que melhoraria o seu dia a dia com ele.</p>'+
+      '<div class="estrelas" id="estrelas">'+[1,2,3,4,5].map(function(n){
+        return '<button type="button" class="estrela" data-nota="'+n+'" onclick="escolherEstrelas('+n+')" aria-label="'+n+' estrela'+(n>1?'s':'')+'">'+icone('estrela')+'</button>';
+      }).join('')+'</div>'+
+      '<div id="estrelas-legenda" class="dica-campo" style="margin:.2rem 0 .8rem">Toque nas estrelas para dar sua nota.</div>'+
+      '<textarea id="f-aval-texto" rows="3" placeholder="O que está bom? O que falta?"></textarea>'+
+      '<div class="erro" id="aval-status"></div>'+
+      '<button class="btn btn-azul btn-full" onclick="enviarAvaliacao()">Enviar</button>';
+  }
+  window.desenharCartaoAvaliacao = desenharCartaoAvaliacao;
+  window.escolherEstrelas = function(n){
+    estrelasEscolhidas = n;
+    document.querySelectorAll('#estrelas .estrela').forEach(function(b){ b.classList.toggle('cheia', Number(b.dataset.nota) <= n); });
+    document.getElementById('estrelas-legenda').textContent = LEGENDAS_NOTA[n];
+  };
+  window.enviarAvaliacao = async function(){
+    const texto = document.getElementById('f-aval-texto').value.trim();
+    const status = document.getElementById('aval-status');
+    if(!estrelasEscolhidas && !texto){ status.textContent = 'Dê uma nota ou escreva uma sugestão.'; return; }
+    try{
+      await addDoc(collection(db,'opinioes'), { estrelas:estrelasEscolhidas || null, sugestao:texto, nome:usuarioAtual.nome||'', email:emailAtual, enviadoEm:new Date().toISOString() });
+      avisar('Obrigada pela sua opinião.');
+      document.getElementById('card-avaliacao').innerHTML =
+        '<label>Obrigada</label><p style="font-size:.85rem;color:var(--texto-2);line-height:1.6;margin:0 0 .8rem">Sua opinião foi registrada.</p>'+
+        '<button class="btn btn-outline btn-full" onclick="desenharCartaoAvaliacao()">Enviar outra</button>';
+    }catch(e){ console.error(e); status.textContent = mensagemErro(e); }
+  };
+</script>
+</body>
+</html>

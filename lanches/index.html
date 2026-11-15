@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Controle Interno · Pão & Tradição</title>
+<meta name="theme-color" content="#13215E">
+<meta http-equiv="refresh" content="0; url=../controle-interno/">
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#FAFAF7;font-family:Inter,Arial,sans-serif;color:#101828;padding:1.5rem;box-sizing:border-box;text-align:center}
+  a{display:inline-block;margin-top:1rem;background:#13215E;color:#fff;text-decoration:none;font-weight:700;padding:12px 20px;border-radius:10px}
+</style>
+<script>
+  // O app de Lanches agora se chama Controle Interno e mudou de endereço.
+  // Remove a versão antiga guardada no aparelho e leva para o endereço novo.
+  try{
+    if('serviceWorker' in navigator){ navigator.serviceWorker.getRegistrations().then(function(rs){ rs.forEach(function(r){ if(r.scope.indexOf('/lanches/') >= 0) r.unregister(); }); }); }
+  }catch(e){}
+  location.replace('../controle-interno/');
+</script>
+</head>
+<body>
+  <div>
+    <p>O app de Lanches agora se chama <strong>Controle Interno</strong> e mudou de endereço.</p>
+    <a href="../controle-interno/">Abrir o Controle Interno</a>
+  </div>
+</body>
+</html>
